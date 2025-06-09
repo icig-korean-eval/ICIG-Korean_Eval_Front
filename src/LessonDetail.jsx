@@ -17,6 +17,15 @@ export default function LessonDetail() {
     const audioChunksRef = useRef([]);
     const audioRef = useRef(null);
 
+
+    const [recording, setRecording] = useState(false);
+    const [audioUrl, setAudioUrl] = useState(null);
+    const chunksRef = useRef([]);
+    const ctxRef = useRef(null);
+    const procRef = useRef(null);
+    const streamRef = useRef(null);
+
+
     // 레벨과 날짜에 맞는 레슨 데이터 가져오기
     const levelLessons = lessonData[level] || [];
     const currentLesson = levelLessons.find(lesson => lesson.Day === parseInt(day));
@@ -126,7 +135,6 @@ export default function LessonDetail() {
     // 녹음 시작 함수
     const startRecording = async () => {
         try {
-            // 기존 오디오 정리
             if (audioURL) {
                 URL.revokeObjectURL(audioURL);
                 setAudioURL(null);
@@ -138,51 +146,97 @@ export default function LessonDetail() {
             setIsPlaying(false);
             setTranscription('');
 
+
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const audioCtx = new AudioContext({ sampleRate: 16000 });
+            const source = audioCtx.createMediaStreamSource(stream);
+            const processor = audioCtx.createScriptProcessor(0, 1, 1);
 
-            // MediaRecorder 설정
-            const options = { mimeType: 'audio/webm' };
-            const mediaRecorder = new MediaRecorder(stream, options);
-            mediaRecorderRef.current = mediaRecorder;
-            audioChunksRef.current = [];
-
-            mediaRecorder.ondataavailable = (event) => {
-                if (event.data.size > 0) {
-                    audioChunksRef.current.push(event.data);
-                }
+            processor.onaudioprocess = (e) => {
+                chunksRef.current.push(new Float32Array(e.inputBuffer.getChannelData(0)));
             };
 
-            mediaRecorder.onstop = async () => {
-                const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+            source.connect(processor);
+            processor.connect(audioCtx.destination);
 
-                // WAV로 변환
-                const wavBlob = await convertToWav(audioBlob);
-                const url = URL.createObjectURL(wavBlob);
-                setAudioURL(url);
-
-                // 오디오 엘리먼트 생성
-                if (audioRef.current) {
-                    audioRef.current.src = url;
-                }
-
-                // 음성을 텍스트로 변환
-                await transcribeAudio(wavBlob);
-            };
-
-            mediaRecorder.start();
+            ctxRef.current = audioCtx;
+            procRef.current = processor;
+            streamRef.current = stream;
             setIsRecording(true);
+            console.log('recording')
         } catch (err) {
             console.error('마이크 접근 오류:', err);
             alert('마이크 접근 권한이 필요합니다.');
         }
     };
 
+
+    function mergeBuffers(buffers, totalLen) {
+        const result = new Float32Array(totalLen);
+        let offset = 0;
+        for (const buf of buffers) {
+            result.set(buf, offset);
+            offset += buf.length;
+        }
+        return result;
+    }
+
+    function floatTo16BitPCM(output, offset, input) {
+        for (let i = 0; i < input.length; i++, offset += 2) {
+            const s = Math.max(-1, Math.min(1, input[i]));
+            output.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+        }
+    }
+
+    function encodeWAV(samples, sampleRate) {
+        const buffer = new ArrayBuffer(44 + samples.length * 2);
+        const view = new DataView(buffer);
+        // RIFF 헤더
+        new TextEncoder().encodeInto("RIFF", new Uint8Array(buffer, 0, 4));
+        view.setUint32(4, 36 + samples.length * 2, true);
+        new TextEncoder().encodeInto("WAVE", new Uint8Array(buffer, 8, 4));
+        new TextEncoder().encodeInto("fmt ", new Uint8Array(buffer, 12, 4));
+        view.setUint32(16, 16, true);       // fmt chunk size
+        view.setUint16(20, 1, true);        // PCM
+        view.setUint16(22, 1, true);        // 채널 수
+        view.setUint32(24, sampleRate, true);
+        view.setUint32(28, sampleRate * 2, true);
+        view.setUint16(32, 2, true);
+        view.setUint16(34, 16, true);
+        new TextEncoder().encodeInto("data", new Uint8Array(buffer, 36, 4));
+        view.setUint32(40, samples.length * 2, true);
+        floatTo16BitPCM(view, 44, samples);
+        return view;
+    }
+
+
     // 녹음 중지 함수
     const stopRecording = () => {
-        if (mediaRecorderRef.current && isRecording) {
-            mediaRecorderRef.current.stop();
-            mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
+        if (procRef.current && isRecording) {
+            procRef.current.disconnect();
+            ctxRef.current.close();
+            streamRef.current.getTracks().forEach((t) => t.stop());
+
+            // WAV 생성
+            const chunks = chunksRef.current;
+            const totalLen = chunks.reduce((sum, c) => sum + c.length, 0);
+            const merged = mergeBuffers(chunks, totalLen);
+            const wavView = encodeWAV(merged, ctxRef.current.sampleRate);
+            const blob = new Blob([wavView], { type: 'audio/wav' });
+            setAudioUrl(URL.createObjectURL(blob));
+            chunksRef.current = [];
             setIsRecording(false);
+
+            const url = URL.createObjectURL(blob);
+            setAudioURL(url);
+
+            if (audioRef.current) {
+                audioRef.current.src = url;
+            }
+
+            const audio = new Audio(url);
+
+            transcribeAudio(blob);
         }
     };
 
