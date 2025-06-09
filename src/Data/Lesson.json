@@ -1,0 +1,188 @@
+{
+    "Beginner": [
+        {
+            "Day": 1,
+            "Topic": "Self-introduction + Hobbies",
+            "KeyExpression": "저는 ~를 좋아해요",
+            "ExampleSentence": "저는 음악 듣는 걸 좋아해요."
+        },
+        {
+            "Day": 2,
+            "Topic": "Daily Routine",
+            "KeyExpression": "~에 ~해요",
+            "ExampleSentence": "오전 9시에 학교에 가요."
+        },
+        {
+            "Day": 3,
+            "Topic": "Places + Directions",
+            "KeyExpression": "~에 있어요 / ~에 가요",
+            "ExampleSentence": "도서관은 학교 옆에 있어요."
+        },
+        {
+            "Day": 4,
+            "Topic": "Ordering Food",
+            "KeyExpression": "~ 주세요 / ~ 맛있어요",
+            "ExampleSentence": "김밥 하나 주세요. 불고기가 맛있어요."
+        },
+        {
+            "Day": 5,
+            "Topic": "Present/Past Tense",
+            "KeyExpression": "~했어요 / ~하고 있어요",
+            "ExampleSentence": "어제 영화를 봤어요. 지금 공부하고 있어요."
+        },
+        {
+            "Day": 6,
+            "Topic": "Describing Objects",
+            "KeyExpression": "~은/는 ~해요",
+            "ExampleSentence": "이 가방은 빨라요. 이 옷은 예뻐요."
+        },
+        {
+            "Day": 7,
+            "Topic": "Phone/Conversation Expressions",
+            "KeyExpression": "지금 괜찮아요? / 나중에 봐요",
+            "ExampleSentence": "지금 통화 괜찮아요? 나중에 다시 전화할게요."
+        },
+        {
+            "Day": 8,
+            "Topic": "Making Appointments",
+            "KeyExpression": "~시에 만나요 / 늦었어요",
+            "ExampleSentence": "오후 두 시에 만나요. 조금 늦었어요."
+        },
+        {
+            "Day": 9,
+            "Topic": "Expressing Feelings",
+            "KeyExpression": "~해서 ~해요",
+            "ExampleSentence": "날씨가 좋아서 기분이 좋아요."
+        },
+        {
+            "Day": 10,
+            "Topic": "Travel Plans",
+            "KeyExpression": "~고 싶어요 / ~을 가 보고 싶어요",
+            "ExampleSentence": "부산에 가고 싶어요. 제주도에 가 보고 싶어요."
+        }
+    ],
+    "Intermediate": [
+        {
+            "Day": 1,
+            "Topic": "Giving Reasons",
+            "KeyExpression": "~기 때문에 / ~아서",
+            "ExampleSentence": "피곤하기 때문에 일찍 잤어요."
+        },
+        {
+            "Day": 2,
+            "Topic": "Talking About Experiences",
+            "KeyExpression": "~아/어 본 적 있어요",
+            "ExampleSentence": "한국 드라마를 본 적 있어요."
+        },
+        {
+            "Day": 3,
+            "Topic": "Making Comparisons",
+            "KeyExpression": "~보다 ~해요",
+            "ExampleSentence": "김치는 불고기보다 매워요."
+        },
+        {
+            "Day": 4,
+            "Topic": "Suggestions/Proposals",
+            "KeyExpression": "~는 게 어때요? / 같이 ~해요",
+            "ExampleSentence": "영화 보는 게 어때요? 같이 가요."
+        },
+        {
+            "Day": 5,
+            "Topic": "Talking About Plans",
+            "KeyExpression": "~려고 해요",
+            "ExampleSentence": "이번 주말에 여행 가려고 해요."
+        },
+        {
+            "Day": 6,
+            "Topic": "Expressing Conditions",
+            "KeyExpression": "~면 / ~면 좋겠어요",
+            "ExampleSentence": "날씨가 좋으면 공원에 갈 거예요."
+        },
+        {
+            "Day": 7,
+            "Topic": "Making Guesses",
+            "KeyExpression": "~것 같아요",
+            "ExampleSentence": "비가 올 것 같아요. 친구가 늦을 것 같아요."
+        },
+        {
+            "Day": 8,
+            "Topic": "Solving Problems",
+            "KeyExpression": "~지 못해요 / 어떻게 해야 해요?",
+            "ExampleSentence": "기계가 작동하지 않아요. 어떻게 해야 해요?"
+        },
+        {
+            "Day": 9,
+            "Topic": "Requests",
+            "KeyExpression": "~해 주세요 / ~해 줄 수 있어요?",
+            "ExampleSentence": "문 좀 닫아 주세요. 도와줄 수 있어요?"
+        },
+        {
+            "Day": 10,
+            "Topic": "Expressing Personal Opinions",
+            "KeyExpression": "제 생각에는 ~ / ~다고 생각해요",
+            "ExampleSentence": "제 생각에는 그건 좋은 아이디어예요."
+        }
+    ],
+    "Advanced": [
+        {
+            "Day": 1,
+            "Topic": "Indirect Speech",
+            "KeyExpression": "~라고 했어요",
+            "ExampleSentence": "선생님이 내일까지 하라고 했어요."
+        },
+        {
+            "Day": 2,
+            "Topic": "Expressing Intentions",
+            "KeyExpression": "~고자 / ~기 위해",
+            "ExampleSentence": "실력을 늘리고자 매일 연습해요."
+        },
+        {
+            "Day": 3,
+            "Topic": "Emphasis Expressions",
+            "KeyExpression": "바로 ~입니다 / 정말 ~해요",
+            "ExampleSentence": "바로 그 사람이 문제의 핵심입니다."
+        },
+        {
+            "Day": 4,
+            "Topic": "Expressing Contrasts",
+            "KeyExpression": "~지만 / ~데도 불구하고",
+            "ExampleSentence": "좋지만 가격이 너무 비싸요."
+        },
+        {
+            "Day": 5,
+            "Topic": "Idioms and Proverbs",
+            "KeyExpression": "발이 넓다 / 손을 놓다",
+            "ExampleSentence": "그는 발이 넓어서 아는 사람이 많아요."
+        },
+        {
+            "Day": 6,
+            "Topic": "Discussing Social Topics",
+            "KeyExpression": "~에 대해 이야기해 봅시다",
+            "ExampleSentence": "환경 보호에 대해 이야기해 봅시다."
+        },
+        {
+            "Day": 7,
+            "Topic": "Logical Connections",
+            "KeyExpression": "~뿐만 아니라 / 게다가",
+            "ExampleSentence": "그는 똑똑할 뿐만 아니라 친절해요."
+        },
+        {
+            "Day": 8,
+            "Topic": "Subtle Emotional Expressions",
+            "KeyExpression": "마음이 ~하다 / 기분이 ~하다",
+            "ExampleSentence": "마음이 놓였어요. 기분이 상했어요."
+        },
+        {
+            "Day": 9,
+            "Topic": "Abstract Topics",
+            "KeyExpression": "~이란 / ~은 ~이다",
+            "ExampleSentence": "행복이란 스스로 만족하는 삶이에요."
+        },
+        {
+            "Day": 10,
+            "Topic": "Speech Presentation",
+            "KeyExpression": "자신의 의견 정리 및 발표",
+            "ExampleSentence": "저는 이 문제에 대해 세 가지 이유로 반대합니다. 첫째로..."
+        }
+    ]
+}

@@ -1,0 +1,129 @@
+.daily-learning {
+    padding: 20px;
+    font-family: 'Arial', sans-serif;
+    background-color: #fffdf6;
+}
+
+.dl-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.dl-header h2 {
+    font-size: 24px;
+    font-weight: bold;
+    flex: 1;
+    text-align: center;
+    margin: 0;
+}
+
+.user-greeting {
+    background-color: #005f83;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-weight: bold;
+}
+
+.level-selector {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+.level-btn {
+    flex: 1;
+    padding: 15px;
+    border-radius: 10px;
+    border: none;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    position: relative;
+    background-color: #f0f0f0;
+    /* 기본 회색 배경 */
+}
+
+.level-btn .level-desc {
+    display: block;
+    font-size: 12px;
+    font-weight: normal;
+    margin-top: 4px;
+    color: #444;
+}
+
+/* active 상태일 때 노란색 배경 강조 */
+.level-btn.active {
+    background-color: #ffe600 !important;
+    border: 2px solid #222;
+}
+
+/* 선택되지 않은 버튼은 border 제거 */
+.level-btn:not(.active) {
+    border: none;
+}
+
+.lesson-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.lesson-card {
+    background-color: #fff9d9;
+    border-radius: 12px;
+    display: flex;
+    padding: 15px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.lesson-day {
+    background-color: #f0f0f0;
+    padding: 12px;
+    font-weight: bold;
+    border-radius: 10px;
+    min-width: 70px;
+    text-align: center;
+}
+
+.lesson-content {
+    flex: 1;
+    margin: 0 20px;
+}
+
+.lesson-topic,
+.lesson-expression,
+.lesson-example {
+    margin: 4px 0;
+}
+
+.lesson-button {
+    padding: 10px 16px;
+    font-weight: bold;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+}
+
+.lesson-button.start {
+    background-color: #ffd500;
+    color: black;
+}
+
+.lesson-button.disabled {
+    background-color: #e0e0e0;
+    color: #aaa;
+    cursor: not-allowed;
+}
+
+.back-button {
+    background: none;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    margin-right: 10px;
+    color: #333;
+}
