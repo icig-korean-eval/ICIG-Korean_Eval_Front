@@ -30,6 +30,8 @@ export default function DailyLearning() {
             if (!completedDays[selectedLevel]?.includes(index + 1)) {
                 markDayComplete(selectedLevel, index + 1);
             }
+            // 레슨 상세 페이지로 이동 (레벨과 레슨 인덱스를 파라미터로 전달)
+            navigate(`/lesson/${selectedLevel}/${index + 1}`);
         }
     };
 

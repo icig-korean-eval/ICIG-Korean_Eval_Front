@@ -1,0 +1,258 @@
+.lesson-detail {
+    min-height: 100vh;
+    background-color: #f5f5f5;
+}
+
+.lesson-header {
+    display: flex;
+    align-items: center;
+    padding: 16px 20px;
+    background-color: white;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.back-button {
+    font-size: 24px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin-right: 16px;
+    color: #333;
+}
+
+.lesson-header h2 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.lesson-content {
+    padding: 20px;
+    background-color: white;
+    margin: 16px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.lesson-title {
+    display: flex;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.lesson-icon {
+    font-size: 28px;
+    margin-right: 12px;
+}
+
+.lesson-title h1 {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.tutor-section {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.tutor-avatar {
+    width: 40px;
+    height: 40px;
+    background-color: #e0e0e0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.tutor-message {
+    flex: 1;
+}
+
+.tutor-message p {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #333;
+}
+
+.korean-example {
+    background-color: #f8f8f8;
+    padding: 16px;
+    border-radius: 8px;
+    margin: 16px 0;
+}
+
+.korean-text {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px !important;
+}
+
+.translation {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 8px !important;
+}
+
+.meaning {
+    font-size: 13px;
+    color: #555;
+    margin-bottom: 0 !important;
+}
+
+.audio-controls {
+    display: flex;
+    justify-content: center;
+    margin: 24px 0;
+}
+
+.audio-button {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #333;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    opacity: 0.5;
+}
+
+.audio-button:disabled {
+    cursor: not-allowed;
+}
+
+.audio-button.has-audio {
+    opacity: 1;
+}
+
+.audio-button.has-audio:hover {
+    background-color: #555;
+    transform: scale(1.05);
+}
+
+.audio-button.playing {
+    background-color: #007bff;
+}
+
+.play-icon {
+    color: white;
+    font-size: 24px;
+    margin-left: 4px;
+}
+
+.audio-button.playing .play-icon {
+    margin-left: 0;
+}
+
+.ai-tutor-section {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    background-color: #f5f5f5;
+    padding: 12px;
+    border-radius: 24px;
+    margin-top: 24px;
+}
+
+.ai-input {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    padding: 8px 12px;
+}
+
+.ai-input::placeholder {
+    color: #999;
+}
+
+.ai-input:disabled {
+    color: #666;
+    cursor: not-allowed;
+}
+
+.ai-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.mic-button,
+.send-button {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    transition: all 0.3s;
+}
+
+.mic-button {
+    background-color: white;
+    border: 1px solid #e0e0e0;
+}
+
+.send-button {
+    background-color: #007bff;
+    color: white;
+}
+
+.mic-button:hover {
+    background-color: #f0f0f0;
+}
+
+.mic-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.mic-button.recording {
+    background-color: #ff4444;
+    color: white;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.7);
+    }
+
+    70% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 10px rgba(255, 68, 68, 0);
+    }
+
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(255, 68, 68, 0);
+    }
+}
+
+.send-button:hover {
+    background-color: #0056b3;
+}
+
+.audio-preview {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.audio-preview audio {
+    width: 100%;
+    max-width: 300px;
+}
