@@ -1,38 +1,38 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate, useParams, useLocation } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import './Style/LessonDetail.css';
 import lessonData from './Data/Lesson.json';
+import { useLevel } from './LevelTabs';
 
 export default function LessonDetail() {
     const navigate = useNavigate();
     const { level, day } = useParams();
-    const location = useLocation();
-    const chatId = location.state?.chatId; // DailyLearning에서 전달받은 chatId
+
+    const { markLessonComplete, getLessonInfo } = useLevel();
 
     // 녹음 관련 state와 ref
     const [isRecording, setIsRecording] = useState(false);
     const [audioURL, setAudioURL] = useState(null);
     const [isPlaying, setIsPlaying] = useState(false);
-    const [transcription, setTranscription] = useState('');
     const [isTranscribing, setIsTranscribing] = useState(false);
-    const [isSending, setIsSending] = useState(false); // 메시지 전송 중 상태
-    const [chatHistory, setChatHistory] = useState([]); // 채팅 기록
-    const mediaRecorderRef = useRef(null);
-    const audioChunksRef = useRef([]);
     const audioRef = useRef(null);
 
-    const [recording, setRecording] = useState(false);
-    const [audioUrl, setAudioUrl] = useState(null);
+    // TTS 관련 state (Web Speech API 사용)
+    const [isTTSPlaying, setIsTTSPlaying] = useState(false);
+    const [isTTSLoading, setIsTTSLoading] = useState(false);
+
     const chunksRef = useRef([]);
     const ctxRef = useRef(null);
     const procRef = useRef(null);
     const streamRef = useRef(null);
 
-    // 레벨과 날짜에 맞는 레슨 데이터 가져오기
+    // 레슨 완료 상태
+    const [isLessonCompleted, setIsLessonCompleted] = useState(false);
+    const [showCompletionMessage, setShowCompletionMessage] = useState(false);
+
     const levelLessons = lessonData[level] || [];
     const currentLesson = levelLessons.find(lesson => lesson.Day === parseInt(day));
 
-    // 레벨별 아이콘 설정
     const getLevelIcon = () => {
         switch (level) {
             case 'Beginner': return '🐥';
@@ -42,192 +42,87 @@ export default function LessonDetail() {
         }
     };
 
-    // 채팅 메시지 전송 API 함수 (Chat Conversation API 사용)
-    const sendChatMessage = async (message) => {
-        try {
-            setIsSending(true);
-
-            const token = 'ZATae5h-sckvlY06-aks7r-Kn2uMq';
-
-            const headers = {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            };
-
-            console.log('=== Chat Conversation API 호출 ===');
-            console.log('Endpoint: /api/v1/chat/conversation');
-            console.log('chatId:', chatId);
-            console.log('chatId 타입:', typeof chatId);
-            console.log('message:', message);
-
-            // chatId가 없으면 에러
-            if (!chatId) {
-                throw new Error('Chat ID가 없습니다. 레슨을 다시 시작해주세요.');
-            }
-
-            // Chat Conversation API 스펙에 맞는 요청 본문
-            const requestBody = {
-                chat_id: chatId,
-                message: message
-            };
-
-            console.log('Request body:', JSON.stringify(requestBody, null, 2));
-            console.log('Request headers:', headers);
-
-            const response = await fetch('/api/v1/chat/conversation', {
-                method: 'POST',
-                headers: headers,
-                body: JSON.stringify(requestBody)
-            });
-
-            console.log('응답 상태:', response.status);
-            console.log('응답 OK:', response.ok);
-
-            const responseText = await response.text();
-            console.log('응답 본문 (raw):', responseText);
-
-            if (!response.ok) {
-                console.log('=== API 오류 분석 ===');
-
-                if (response.status === 404) {
-                    console.log('404 에러: Chat history not found');
-                    console.log('가능한 원인:');
-                    console.log('1. chatId가 잘못되었을 수 있음:', chatId);
-                    console.log('2. 채팅 세션이 만료되었을 수 있음');
-                    console.log('3. 채팅 생성 후 충분한 시간이 지나지 않았을 수 있음');
-
-                    // chatId 형식 확인
-                    console.log('chatId 길이:', chatId?.length);
-                    console.log('chatId UUID 형식 체크:', /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(chatId));
-
-                    throw new Error(`채팅 세션을 찾을 수 없습니다. chatId: ${chatId}\n레슨을 다시 시작해주세요.`);
-                } else if (response.status === 422) {
-                    console.log('422 에러: 요청 데이터 검증 실패');
-                    try {
-                        const errorData = JSON.parse(responseText);
-                        console.log('검증 오류 상세:', errorData);
-                        throw new Error(`요청 데이터 오류: ${JSON.stringify(errorData)}`);
-                    } catch (parseError) {
-                        throw new Error(`요청 데이터 검증 실패: ${responseText}`);
-                    }
-                } else {
-                    throw new Error(`API 오류 ${response.status}: ${responseText}`);
-                }
-            }
-
-            // 성공 응답 처리
-            let data;
-            try {
-                data = JSON.parse(responseText);
-                console.log('=== 성공 응답 ===');
-                console.log('파싱된 데이터:', data);
-            } catch (parseError) {
-                console.error('JSON 파싱 오류:', parseError);
-                throw new Error(`서버 응답 파싱 실패: ${responseText}`);
-            }
-
-            // 메시지 전송 성공 후 채팅 기록을 다시 로드
-            console.log('메시지 전송 성공, 채팅 기록을 새로 로드합니다.');
-            await loadChatHistory();
-
-            // 입력 필드 초기화
-            setTranscription('');
-
-            console.log('메시지 전송 완료!');
-            return data;
-
-        } catch (error) {
-            console.error('=== 채팅 전송 최종 오류 ===');
-            console.error('오류 상세:', error);
-            alert(`메시지 전송 실패: ${error.message}`);
-            throw error;
-        } finally {
-            setIsSending(false);
-        }
-    };
-
-    // 채팅 기록 로드 함수
-    const loadChatHistory = async () => {
-        if (!chatId) return false;
+    // Web Speech API를 사용한 TTS 함수
+    const playTTS = () => {
+        if (!currentLesson?.ExampleSentence) return;
 
         try {
-            const token = 'ZATae5h-sckvlY06-aks7r-Kn2uMq';
+            // 현재 재생 중이면 중지
+            if (isTTSPlaying) {
+                window.speechSynthesis.cancel();
+                setIsTTSPlaying(false);
+                return;
+            }
 
-            console.log('=== 채팅 기록 로드 ===');
-            console.log('chatId:', chatId);
+            // Web Speech API 지원 확인
+            if (!('speechSynthesis' in window)) {
+                alert('이 브라우저는 음성 합성을 지원하지 않습니다.');
+                return;
+            }
 
-            const response = await fetch(`/api/v1/chat/${chatId}/history`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
+            setIsTTSLoading(true);
 
-            console.log('채팅 기록 응답 상태:', response.status);
+            // SpeechSynthesisUtterance 객체 생성
+            const utterance = new SpeechSynthesisUtterance(currentLesson.ExampleSentence);
 
-            if (response.ok) {
-                const historyData = await response.json();
-                console.log('채팅 기록 데이터:', historyData);
+            // 한국어 설정
+            utterance.lang = 'ko-KR';
+            utterance.rate = 0.8; // 조금 천천히
+            utterance.pitch = 1.0; // 기본 음높이
+            utterance.volume = 1.0; // 최대 볼륨
 
-                // API 응답을 우리 채팅 기록 형식으로 변환
-                const formattedHistory = historyData.map(item => ({
-                    type: item.role === 'user' ? 'user' : 'ai',
-                    message: item.content,
-                    timestamp: item.timestamp
-                }));
+            // 한국어 음성 찾기
+            const voices = window.speechSynthesis.getVoices();
+            const koreanVoice = voices.find(voice =>
+                voice.lang.includes('ko') || voice.lang.includes('KR')
+            );
 
-                setChatHistory(formattedHistory);
-                console.log('채팅 기록 로드 완료:', formattedHistory);
-                return true;
+            if (koreanVoice) {
+                utterance.voice = koreanVoice;
+                console.log('한국어 음성 사용:', koreanVoice.name);
             } else {
-                const errorText = await response.text();
-                console.log('채팅 기록 로드 실패:', errorText);
-
-                if (response.status === 404) {
-                    console.log('404 에러: 새로운 채팅 세션이거나 아직 준비되지 않음');
-                    // 빈 채팅 기록으로 시작
-                    setChatHistory([]);
-                }
-                return false;
+                console.log('한국어 음성을 찾을 수 없어 기본 음성 사용');
             }
+
+            // 이벤트 리스너 설정
+            utterance.onstart = () => {
+                console.log('TTS 시작');
+                setIsTTSLoading(false);
+                setIsTTSPlaying(true);
+            };
+
+            utterance.onend = () => {
+                console.log('TTS 완료');
+                setIsTTSPlaying(false);
+            };
+
+            utterance.onerror = (event) => {
+                console.error('TTS 오류:', event.error);
+                setIsTTSLoading(false);
+                setIsTTSPlaying(false);
+                alert('음성 재생 중 오류가 발생했습니다.');
+            };
+
+            // 음성 재생 시작
+            window.speechSynthesis.speak(utterance);
+
         } catch (error) {
-            console.error('채팅 기록 로드 오류:', error);
-            // 오류가 있어도 빈 배열로 시작
-            setChatHistory([]);
-            return false;
+            console.error('TTS 재생 오류:', error);
+            setIsTTSLoading(false);
+            setIsTTSPlaying(false);
+            alert('음성 재생에 실패했습니다.');
         }
     };
 
-    // 컴포넌트 마운트 시 채팅 기록 로드
-    useEffect(() => {
-        if (chatId) {
-            console.log('chatId가 설정됨, 채팅 기록 로드 시작');
-            // 채팅 기록 로드가 실패해도 계속 진행
-            loadChatHistory().catch(error => {
-                console.log('초기 채팅 기록 로드 실패, 빈 상태로 시작:', error);
-            });
+    // TTS 중지 함수 (컴포넌트 언마운트 시)
+    const stopTTS = () => {
+        if (window.speechSynthesis.speaking) {
+            window.speechSynthesis.cancel();
+            setIsTTSPlaying(false);
         }
-    }, [chatId]);
-
-    // Send 버튼 클릭 핸들러
-    const handleSendMessage = async () => {
-        if (!transcription.trim() || isSending) return;
-
-        console.log('=== Send 버튼 클릭 디버그 ===');
-        console.log('현재 chatId:', chatId);
-        console.log('보낼 메시지:', transcription.trim());
-
-        if (!chatId) {
-            alert('채팅 세션이 없습니다. 다시 시작해주세요.');
-            return;
-        }
-
-        // 채팅 기록이 없어도 메시지 전송 시도
-        console.log('메시지 전송을 시도합니다...');
-        await sendChatMessage(transcription.trim());
     };
 
-    // IPA 변환 함수 (텍스트용)
+    // IPA 변환 함수
     const convertTextToIPA = async (text) => {
         try {
             const token = 'ZATae5h-sckvlY06-aks7r-Kn2uMq';
@@ -248,7 +143,6 @@ export default function LessonDetail() {
             }
 
             const data = await response.json();
-            console.log('IPA 변환 결과:', data);
             return data;
         } catch (error) {
             console.error('IPA 변환 오류:', error);
@@ -270,7 +164,6 @@ export default function LessonDetail() {
             };
         }
 
-        // 간단한 문자 단위 비교 (실제로는 더 정교한 음성학적 비교가 필요)
         const original = originalIPA.toLowerCase().replace(/\s+/g, '');
         const user = userIPA.toLowerCase().replace(/\s+/g, '');
 
@@ -306,6 +199,23 @@ export default function LessonDetail() {
             feedback = '발음을 다시 연습해보세요. 예시를 들어보고 따라해보세요. 🔄';
         }
 
+        // 70점 이상일 때 레슨 완료 처리
+        if (score >= 70 && !isLessonCompleted) {
+            console.log('=== 레슨 완료 처리 ===');
+            console.log('점수:', score, '레벨:', level, '일차:', day);
+
+            const success = markLessonComplete(level, parseInt(day), score);
+            if (success) {
+                setIsLessonCompleted(true);
+                setShowCompletionMessage(true);
+
+                // 3초 후 완료 메시지 숨기기
+                setTimeout(() => {
+                    setShowCompletionMessage(false);
+                }, 3000);
+            }
+        }
+
         return {
             score,
             feedback,
@@ -315,7 +225,6 @@ export default function LessonDetail() {
         };
     };
 
-    // 레슨 데이터에 IPA 추가
     const [lessonIPA, setLessonIPA] = useState('');
     const [pronunciationResult, setPronunciationResult] = useState(null);
 
@@ -332,11 +241,18 @@ export default function LessonDetail() {
         }
     }, [currentLesson]);
 
-    // 음성을 텍스트로 변환하는 함수 (수정됨)
+    // 컴포넌트 마운트 시 레슨 완료 상태 확인
+    useEffect(() => {
+        const lessonInfo = getLessonInfo(level, parseInt(day));
+        if (lessonInfo && lessonInfo.completed && lessonInfo.score >= 70) {
+            setIsLessonCompleted(true);
+        }
+    }, [level, day, getLessonInfo]);
+
+    // 음성을 텍스트로 변환하는 함수
     const transcribeAudio = async (wavBlob) => {
         try {
             setIsTranscribing(true);
-            setTranscription('');
 
             const formData = new FormData();
             formData.append('file', wavBlob, 'recording.wav');
@@ -351,7 +267,6 @@ export default function LessonDetail() {
 
             console.log('Transcription response status:', response.status);
             const responseText = await response.text();
-            console.log('Transcription response text:', responseText);
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}, message: ${responseText}`);
@@ -359,14 +274,13 @@ export default function LessonDetail() {
 
             try {
                 const data = JSON.parse(responseText);
-                console.log('Transcription parsed data:', data);
-
                 const transcribedText = data.transcription || '';
-                setTranscription(transcribedText);
 
                 // 음성 인식 성공 시 발음 비교 수행
                 if (transcribedText && lessonIPA) {
                     console.log('발음 비교 시작...');
+                    console.log('인식된 텍스트:', transcribedText);
+
                     const userIPAResult = await convertTextToIPA(transcribedText);
 
                     if (userIPAResult && userIPAResult.original) {
@@ -378,6 +292,8 @@ export default function LessonDetail() {
                             alert(`발음 점수: ${comparison.score}점\n${comparison.feedback}`);
                         }, 500);
                     }
+                } else {
+                    alert('음성 인식이 실패했습니다. 다시 시도해주세요.');
                 }
             } catch (parseError) {
                 console.error('JSON parsing error:', parseError);
@@ -396,87 +312,7 @@ export default function LessonDetail() {
         }
     };
 
-    // WAV 변환 함수
-    const convertToWav = async (audioBlob) => {
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const arrayBuffer = await audioBlob.arrayBuffer();
-        const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-
-        // WAV 헤더 생성
-        const length = audioBuffer.length * 2;
-        const buffer = new ArrayBuffer(44 + length);
-        const view = new DataView(buffer);
-
-        // WAV 파일 헤더 작성
-        const writeString = (offset, string) => {
-            for (let i = 0; i < string.length; i++) {
-                view.setUint8(offset + i, string.charCodeAt(i));
-            }
-        };
-
-        writeString(0, 'RIFF');
-        view.setUint32(4, 36 + length, true);
-        writeString(8, 'WAVE');
-        writeString(12, 'fmt ');
-        view.setUint32(16, 16, true);
-        view.setUint16(20, 1, true);
-        view.setUint16(22, 1, true);
-        view.setUint32(24, audioBuffer.sampleRate, true);
-        view.setUint32(28, audioBuffer.sampleRate * 2, true);
-        view.setUint16(32, 2, true);
-        view.setUint16(34, 16, true);
-        writeString(36, 'data');
-        view.setUint32(40, length, true);
-
-        // 오디오 데이터 작성
-        const channelData = audioBuffer.getChannelData(0);
-        let offset = 44;
-        for (let i = 0; i < channelData.length; i++) {
-            const sample = Math.max(-1, Math.min(1, channelData[i]));
-            view.setInt16(offset, sample * 0x7FFF, true);
-            offset += 2;
-        }
-
-        return new Blob([buffer], { type: 'audio/wav' });
-    };
-
-    // 녹음 시작 함수
-    const startRecording = async () => {
-        try {
-            if (audioURL) {
-                URL.revokeObjectURL(audioURL);
-                setAudioURL(null);
-            }
-            if (audioRef.current) {
-                audioRef.current.pause();
-                audioRef.current.src = '';
-            }
-            setIsPlaying(false);
-            setTranscription('');
-
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            const audioCtx = new AudioContext({ sampleRate: 16000 });
-            const source = audioCtx.createMediaStreamSource(stream);
-            const processor = audioCtx.createScriptProcessor(0, 1, 1);
-
-            processor.onaudioprocess = (e) => {
-                chunksRef.current.push(new Float32Array(e.inputBuffer.getChannelData(0)));
-            };
-
-            source.connect(processor);
-            processor.connect(audioCtx.destination);
-
-            ctxRef.current = audioCtx;
-            procRef.current = processor;
-            streamRef.current = stream;
-            setIsRecording(true);
-            console.log('recording')
-        } catch (err) {
-            console.error('마이크 접근 오류:', err);
-            alert('마이크 접근 권한이 필요합니다.');
-        }
-    };
-
+    // 녹음 관련 유틸리티 함수들
     function mergeBuffers(buffers, totalLen) {
         const result = new Float32Array(totalLen);
         let offset = 0;
@@ -497,14 +333,13 @@ export default function LessonDetail() {
     function encodeWAV(samples, sampleRate) {
         const buffer = new ArrayBuffer(44 + samples.length * 2);
         const view = new DataView(buffer);
-        // RIFF 헤더
         new TextEncoder().encodeInto("RIFF", new Uint8Array(buffer, 0, 4));
         view.setUint32(4, 36 + samples.length * 2, true);
         new TextEncoder().encodeInto("WAVE", new Uint8Array(buffer, 8, 4));
         new TextEncoder().encodeInto("fmt ", new Uint8Array(buffer, 12, 4));
-        view.setUint32(16, 16, true);       // fmt chunk size
-        view.setUint16(20, 1, true);        // PCM
-        view.setUint16(22, 1, true);        // 채널 수
+        view.setUint32(16, 16, true);
+        view.setUint16(20, 1, true);
+        view.setUint16(22, 1, true);
         view.setUint32(24, sampleRate, true);
         view.setUint32(28, sampleRate * 2, true);
         view.setUint16(32, 2, true);
@@ -514,6 +349,44 @@ export default function LessonDetail() {
         floatTo16BitPCM(view, 44, samples);
         return view;
     }
+
+    // 녹음 시작 함수
+    const startRecording = async () => {
+        try {
+            // 이전 녹음 정리
+            if (audioURL) {
+                URL.revokeObjectURL(audioURL);
+                setAudioURL(null);
+            }
+            if (audioRef.current) {
+                audioRef.current.pause();
+                audioRef.current.src = '';
+            }
+            setIsPlaying(false);
+            setPronunciationResult(null);
+
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const audioCtx = new AudioContext({ sampleRate: 16000 });
+            const source = audioCtx.createMediaStreamSource(stream);
+            const processor = audioCtx.createScriptProcessor(0, 1, 1);
+
+            processor.onaudioprocess = (e) => {
+                chunksRef.current.push(new Float32Array(e.inputBuffer.getChannelData(0)));
+            };
+
+            source.connect(processor);
+            processor.connect(audioCtx.destination);
+
+            ctxRef.current = audioCtx;
+            procRef.current = processor;
+            streamRef.current = stream;
+            setIsRecording(true);
+            console.log('녹음 시작');
+        } catch (err) {
+            console.error('마이크 접근 오류:', err);
+            alert('마이크 접근 권한이 필요합니다.');
+        }
+    };
 
     // 녹음 중지 함수
     const stopRecording = () => {
@@ -528,7 +401,7 @@ export default function LessonDetail() {
             const merged = mergeBuffers(chunks, totalLen);
             const wavView = encodeWAV(merged, ctxRef.current.sampleRate);
             const blob = new Blob([wavView], { type: 'audio/wav' });
-            setAudioUrl(URL.createObjectURL(blob));
+
             chunksRef.current = [];
             setIsRecording(false);
 
@@ -539,8 +412,7 @@ export default function LessonDetail() {
                 audioRef.current.src = url;
             }
 
-            const audio = new Audio(url);
-
+            console.log('녹음 완료, 음성 인식 시작');
             transcribeAudio(blob);
         }
     };
@@ -572,33 +444,31 @@ export default function LessonDetail() {
         setIsPlaying(false);
     };
 
-    // Enter 키로 메시지 전송
-    const handleKeyPress = (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            handleSendMessage();
-        }
-    };
-
-    // 컴포넌트 언마운트 시 cleanup
+    // 컴포넌트 마운트 시 음성 로드 및 언마운트 시 cleanup
     useEffect(() => {
+        // 음성 목록 로드 (브라우저에 따라 시간이 걸릴 수 있음)
+        const loadVoices = () => {
+            const voices = window.speechSynthesis.getVoices();
+            console.log('사용 가능한 음성:', voices.filter(v => v.lang.includes('ko')));
+        };
+
+        // 음성 목록이 로드되면 실행
+        if (window.speechSynthesis.onvoiceschanged !== undefined) {
+            window.speechSynthesis.onvoiceschanged = loadVoices;
+        }
+        loadVoices(); // 즉시 한 번 실행
+
         return () => {
-            // 오디오 URL 정리
+            // 컴포넌트 언마운트 시 TTS 중지
+            stopTTS();
             if (audioURL) {
                 URL.revokeObjectURL(audioURL);
             }
-            // 녹음 중이면 중지
-            if (mediaRecorderRef.current && isRecording) {
-                mediaRecorderRef.current.stop();
-                mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
+            if (isRecording && streamRef.current) {
+                streamRef.current.getTracks().forEach(track => track.stop());
             }
         };
     }, [audioURL, isRecording]);
-
-    // chatId 확인용 로그
-    useEffect(() => {
-        console.log('LessonDetail에서 받은 chatId:', chatId);
-    }, [chatId]);
 
     if (!currentLesson) {
         return (
@@ -625,7 +495,18 @@ export default function LessonDetail() {
                 <div className="lesson-title">
                     <span className="lesson-icon">{getLevelIcon()}</span>
                     <h1>Day {currentLesson.Day} - {currentLesson.Topic}</h1>
+                    {isLessonCompleted && (
+                        <span className="completion-badge">✅ 완료</span>
+                    )}
                 </div>
+
+                {/* 레슨 완료 메시지 */}
+                {showCompletionMessage && (
+                    <div className="completion-message">
+                        🎉 축하합니다! 레슨을 완료했습니다!
+                        <br />다음 레슨이 해제되었습니다.
+                    </div>
+                )}
 
                 <div className="tutor-section">
                     <div className="tutor-avatar">👤</div>
@@ -635,7 +516,23 @@ export default function LessonDetail() {
                         <p>Let's start with a simple sentence!</p>
 
                         <div className="korean-example">
-                            <p className="korean-text">👉 "{currentLesson.ExampleSentence}"</p>
+                            <div className="sentence-header">
+                                <p className="korean-text">👉 "{currentLesson.ExampleSentence}"</p>
+                                <button
+                                    className={`tts-button ${isTTSPlaying ? 'playing' : ''}`}
+                                    onClick={playTTS}
+                                    disabled={isTTSLoading}
+                                    title="음성으로 듣기"
+                                >
+                                    {isTTSLoading ? (
+                                        <span className="loading-spinner">⏳</span>
+                                    ) : isTTSPlaying ? (
+                                        <span className="speaker-icon">🔊</span>
+                                    ) : (
+                                        <span className="speaker-icon">🔈</span>
+                                    )}
+                                </button>
+                            </div>
                             <p className="translation">Key Expression: {currentLesson.KeyExpression}</p>
                             <p className="meaning">💬 Topic: {currentLesson.Topic}</p>
                             {lessonIPA && (
@@ -643,8 +540,11 @@ export default function LessonDetail() {
                             )}
                         </div>
 
-                        <p>Try saying it out loud with me!</p>
-                        <p>Ready? Let's go</p>
+                        <p>Click the speaker button to listen, then try saying it out loud!</p>
+                        <p><strong>목표: 70점 이상을 받아서 다음 레슨을 해제하세요!</strong></p>
+                        {isLessonCompleted && (
+                            <p className="completion-note">✅ 이미 완료한 레슨입니다. 복습해보세요!</p>
+                        )}
                     </div>
                 </div>
 
@@ -692,56 +592,51 @@ export default function LessonDetail() {
                     </div>
                 )}
 
-                {/* 채팅 기록 표시 */}
-                {chatHistory.length > 0 && (
-                    <div className="chat-history">
-                        {chatHistory.map((chat, index) => (
-                            <div key={index} className={`chat-message ${chat.type}`}>
-                                <div className="message-content">
-                                    {chat.type === 'user' ? '👤 ' : '🤖 '}
-                                    {chat.message}
-                                </div>
-                            </div>
-                        ))}
+                {/* 오디오 재생 컨트롤 */}
+                {audioURL && (
+                    <div className="audio-controls">
+                        <button
+                            className={`audio-button has-audio ${isPlaying ? 'playing' : ''}`}
+                            onClick={handlePlayClick}
+                        >
+                            <span className="play-icon">{isPlaying ? '⏸' : '▶'}</span>
+                        </button>
+                        <p className="audio-label">녹음된 음성 재생</p>
                     </div>
                 )}
 
-                <div className="audio-controls">
-                    <button
-                        className={`audio-button ${audioURL ? 'has-audio' : ''} ${isPlaying ? 'playing' : ''}`}
-                        onClick={handlePlayClick}
-                        disabled={!audioURL}
-                    >
-                        <span className="play-icon">{isPlaying ? '⏸' : '▶'}</span>
-                    </button>
-                </div>
+                {/* 음성 녹음 섹션 */}
+                <div className="recording-section">
+                    <div className="recording-instruction">
+                        <p>🎤 아래 버튼을 눌러서 예시 문장을 따라 말해보세요!</p>
+                        <p className="target-sentence">"{currentLesson.ExampleSentence}"</p>
+                    </div>
 
-                <div className="ai-tutor-section">
-                    <input
-                        type="text"
-                        placeholder={isTranscribing ? "음성을 텍스트로 변환 중..." : "Speak to your AI tutor!"}
-                        className="ai-input"
-                        value={transcription}
-                        onChange={(e) => setTranscription(e.target.value)}
-                        onKeyPress={handleKeyPress}
-                        disabled={isTranscribing || isSending}
-                    />
-                    <div className="ai-buttons">
+                    <div className="recording-controls">
                         <button
-                            className={`mic-button ${isRecording ? 'recording' : ''}`}
+                            className={`mic-button-large ${isRecording ? 'recording' : ''}`}
                             onClick={handleMicClick}
-                            disabled={isTranscribing || isSending}
+                            disabled={isTranscribing}
                         >
-                            {isRecording ? '⏹️' : '🎤'}
-                        </button>
-                        <button
-                            className={`send-button ${!transcription.trim() || isSending ? 'disabled' : ''}`}
-                            onClick={handleSendMessage}
-                            disabled={!transcription.trim() || isSending}
-                        >
-                            {isSending ? '⏳' : '▶'}
+                            {isRecording ? (
+                                <span className="recording-text">
+                                    <span className="mic-icon">⏹️</span>
+                                    <span>녹음 중지</span>
+                                </span>
+                            ) : (
+                                <span className="recording-text">
+                                    <span className="mic-icon">🎤</span>
+                                    <span>{isTranscribing ? '분석 중...' : '녹음 시작'}</span>
+                                </span>
+                            )}
                         </button>
                     </div>
+
+                    {isTranscribing && (
+                        <div className="analyzing-message">
+                            <p>🔄 음성을 분석하고 있습니다...</p>
+                        </div>
+                    )}
                 </div>
 
                 {/* 숨겨진 오디오 엘리먼트 */}

@@ -39,17 +39,53 @@
     display: flex;
     align-items: center;
     margin-bottom: 24px;
+    gap: 12px;
 }
 
 .lesson-icon {
     font-size: 28px;
-    margin-right: 12px;
 }
 
 .lesson-title h1 {
     font-size: 20px;
     font-weight: 600;
     margin: 0;
+    flex: 1;
+}
+
+/* 완료 배지 스타일 */
+.completion-badge {
+    background-color: #4CAF50;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+/* 레슨 완료 메시지 */
+.completion-message {
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    color: white;
+    padding: 16px;
+    border-radius: 12px;
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: bold;
+    animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .tutor-section {
@@ -81,6 +117,92 @@
     color: #333;
 }
 
+.completion-note {
+    background-color: #e8f5e8;
+    color: #2e7d32;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-weight: bold;
+    border: 1px solid #4CAF50;
+}
+
+/* TTS 관련 스타일 */
+.sentence-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.tts-button {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+    flex-shrink: 0;
+}
+
+.tts-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
+}
+
+.tts-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.tts-button.playing {
+    background: linear-gradient(135deg, #28a745, #1e7e34);
+    animation: pulse-tts 1.5s infinite;
+}
+
+@keyframes pulse-tts {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
+    }
+
+    70% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 10px rgba(40, 167, 69, 0);
+    }
+
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(40, 167, 69, 0);
+    }
+}
+
+.speaker-icon {
+    font-size: 18px;
+}
+
+.loading-spinner {
+    font-size: 16px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 .korean-example {
     background-color: #f8f8f8;
     padding: 16px;
@@ -104,13 +226,253 @@
 .meaning {
     font-size: 13px;
     color: #555;
+    margin-bottom: 8px !important;
+}
+
+.ipa-text {
+    font-size: 13px;
+    color: #0066cc;
+    font-family: monospace;
     margin-bottom: 0 !important;
+}
+
+/* 발음 분석 결과 스타일 개선 */
+.pronunciation-result {
+    background: linear-gradient(135deg, #f0f8ff, #e6f3ff);
+    border: 2px solid #0066cc;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px 0;
+    box-shadow: 0 4px 12px rgba(0, 102, 204, 0.1);
+}
+
+.result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.result-header h3 {
+    margin: 0;
+    color: #333;
+    font-size: 18px;
+}
+
+.score {
+    font-size: 24px;
+    font-weight: bold;
+    padding: 8px 16px;
+    border-radius: 20px;
+    color: white;
+}
+
+.score.good {
+    background-color: #4CAF50;
+    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+}
+
+.score.needs-practice {
+    background-color: #ff9800;
+    box-shadow: 0 2px 8px rgba(255, 152, 0, 0.3);
+}
+
+.feedback {
+    font-size: 16px;
+    margin: 12px 0;
+    font-weight: 500;
+    color: #333;
+}
+
+.ipa-comparison {
+    background-color: white;
+    border-radius: 8px;
+    padding: 12px;
+    margin: 12px 0;
+}
+
+.ipa-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    font-family: monospace;
+}
+
+.ipa-row:last-child {
+    margin-bottom: 0;
+}
+
+.ipa-row .label {
+    font-weight: bold;
+    min-width: 50px;
+    color: #666;
+}
+
+.ipa-row .ipa {
+    margin-left: 12px;
+    font-size: 14px;
+    color: #0066cc;
+}
+
+.differences {
+    margin-top: 12px;
+}
+
+.differences h4 {
+    margin: 0 0 8px 0;
+    color: #333;
+    font-size: 14px;
+}
+
+.differences ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.differences li {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 4px;
+}
+
+.try-again-btn {
+    background: linear-gradient(135deg, #0066cc, #0052a3);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 12px;
+    transition: all 0.3s;
+}
+
+.try-again-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+}
+
+/* 녹음 섹션 스타일 */
+.recording-section {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-radius: 16px;
+    padding: 24px;
+    margin: 24px 0;
+    text-align: center;
+    border: 2px solid #dee2e6;
+}
+
+.recording-instruction {
+    margin-bottom: 20px;
+}
+
+.recording-instruction p {
+    margin: 8px 0;
+    font-size: 16px;
+    color: #333;
+}
+
+.target-sentence {
+    font-size: 18px !important;
+    font-weight: bold !important;
+    color: #0066cc !important;
+    background-color: white;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: 2px solid #0066cc;
+    display: inline-block;
+    margin: 8px 0;
+}
+
+.recording-controls {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.mic-button-large {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 16px 32px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+    min-width: 180px;
+}
+
+.mic-button-large:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 123, 255, 0.4);
+}
+
+.mic-button-large:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.mic-button-large.recording {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    animation: pulse-large 1.5s infinite;
+}
+
+@keyframes pulse-large {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+    }
+
+    70% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 15px rgba(220, 53, 69, 0);
+    }
+
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+    }
+}
+
+.recording-text {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mic-icon {
+    font-size: 24px;
+}
+
+.analyzing-message {
+    background-color: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 16px;
+    color: #856404;
+}
+
+.analyzing-message p {
+    margin: 0;
+    font-weight: bold;
 }
 
 .audio-controls {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
     margin: 24px 0;
+    gap: 8px;
+}
+
+.audio-label {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
 }
 
 .audio-button {
@@ -154,98 +516,7 @@
     margin-left: 0;
 }
 
-.ai-tutor-section {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-    background-color: #f5f5f5;
-    padding: 12px;
-    border-radius: 24px;
-    margin-top: 24px;
-}
 
-.ai-input {
-    flex: 1;
-    background: none;
-    border: none;
-    outline: none;
-    font-size: 14px;
-    padding: 8px 12px;
-}
-
-.ai-input::placeholder {
-    color: #999;
-}
-
-.ai-input:disabled {
-    color: #666;
-    cursor: not-allowed;
-}
-
-.ai-buttons {
-    display: flex;
-    gap: 8px;
-}
-
-.mic-button,
-.send-button {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    transition: all 0.3s;
-}
-
-.mic-button {
-    background-color: white;
-    border: 1px solid #e0e0e0;
-}
-
-.send-button {
-    background-color: #007bff;
-    color: white;
-}
-
-.mic-button:hover {
-    background-color: #f0f0f0;
-}
-
-.mic-button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.mic-button.recording {
-    background-color: #ff4444;
-    color: white;
-    animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse {
-    0% {
-        transform: scale(1);
-        box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.7);
-    }
-
-    70% {
-        transform: scale(1.05);
-        box-shadow: 0 0 0 10px rgba(255, 68, 68, 0);
-    }
-
-    100% {
-        transform: scale(1);
-        box-shadow: 0 0 0 0 rgba(255, 68, 68, 0);
-    }
-}
-
-.send-button:hover {
-    background-color: #0056b3;
-}
 
 .audio-preview {
     margin-top: 20px;

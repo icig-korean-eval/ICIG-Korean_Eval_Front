@@ -6,7 +6,7 @@ import lessonData from './Data/Lesson.json';
 
 export default function DailyLearning() {
     const navigate = useNavigate();
-    const { completedDays, markDayComplete } = useLevel();
+    const { completedDays, isLessonCompleted, getLessonInfo } = useLevel();
 
     const [selectedLevel, setSelectedLevel] = useState('Beginner');
     const [isLoading, setIsLoading] = useState(false);
@@ -19,65 +19,42 @@ export default function DailyLearning() {
         expression: lesson.KeyExpression,
         example: lesson.ExampleSentence,
         index: lesson.Day - 1,
-        situation: lesson.Situation, // API에 보낼 상황 데이터
+        situation: lesson.Situation,
+        dayNumber: lesson.Day
     }));
 
+    // 레슨 상태 확인 함수
+    const getLessonStatus = (dayNumber) => {
+        const lessonInfo = getLessonInfo(selectedLevel, dayNumber);
+        const isCompleted = isLessonCompleted(selectedLevel, dayNumber);
+
+        return {
+            isCompleted,
+            score: lessonInfo?.score || null,
+            completedAt: lessonInfo?.completedAt || null
+        };
+    };
+
+    // 잠금 해제 로직
     const isUnlocked = (index) => {
-        if (index === 0) return true;
-        return completedDays[selectedLevel]?.includes(index);
+        if (index === 0) return true; // Day 1은 항상 해제
+
+        // 이전 레슨이 70점 이상으로 완료되었는지 확인
+        const previousDay = index; // index는 0부터 시작하므로 이전 일차는 index
+        return isLessonCompleted(selectedLevel, previousDay);
     };
 
-    // 채팅 생성 API 호출 함수
-    const createChat = async (situation) => {
-        try {
-            const token = 'ZATae5h-sckvlY06-aks7r-Kn2uMq';
-
-            const headers = {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            };
-
-            console.log('채팅 생성 API 호출 중...');
-
-            const response = await fetch('/api/v1/chat', {
-                method: 'POST',
-                headers: headers,
-                body: JSON.stringify({
-                    situation: situation
-                })
-            });
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error('API 오류:', errorText);
-                throw new Error(`API 요청 실패: ${response.status} - ${errorText}`);
-            }
-
-            const data = await response.json();
-            console.log('채팅 생성 성공:', data);
-            return data.chat_id;
-        } catch (error) {
-            console.error('채팅 생성 오류:', error);
-            throw error;
-        }
-    };
-
-    const handleStartLesson = async (index) => {
+    const handleStartLesson = async (index, dayNumber) => {
         if (index === 0 || isUnlocked(index)) {
             setIsLoading(true);
 
             try {
-                // 완료 상태 업데이트
-                if (!completedDays[selectedLevel]?.includes(index + 1)) {
-                    markDayComplete(selectedLevel, index + 1);
-                }
-
                 console.log('=== 레슨 시작 ===');
                 console.log('레벨:', selectedLevel);
-                console.log('일차:', index + 1);
+                console.log('일차:', dayNumber);
 
-                // 채팅 생성 없이 바로 LessonDetail 페이지로 이동
-                navigate(`/lesson/${selectedLevel}/${index + 1}`);
+                // LessonDetail 페이지로 이동
+                navigate(`/lesson/${selectedLevel}/${dayNumber}`);
 
                 console.log('페이지 이동 완료');
 
@@ -88,6 +65,13 @@ export default function DailyLearning() {
                 setIsLoading(false);
             }
         }
+    };
+
+    // 레벨별 완료된 레슨 수 계산
+    const getCompletedCount = (level) => {
+        const totalLessons = lessonData[level]?.length || 0;
+        const completedCount = completedDays[level]?.length || 0;
+        return { completed: completedCount, total: totalLessons };
     };
 
     return (
@@ -102,49 +86,131 @@ export default function DailyLearning() {
                     className={`level-btn beginner ${selectedLevel === 'Beginner' ? 'active' : ''}`}
                     onClick={() => setSelectedLevel('Beginner')}
                 >
-                    🐥 Beginner Level
-                    <span className="level-desc">Basic Conversation<br />& Expression Expansion</span>
+                    <div className="level-content">
+                        <div className="level-header">
+                            <span className="level-icon">🐥</span>
+                            <span className="level-title">Beginner Level</span>
+                        </div>
+                        <span className="level-desc">Basic Conversation<br />& Expression Expansion</span>
+                        <div className="progress-indicator">
+                            <span className="progress-text">
+                                {getCompletedCount('Beginner').completed}/{getCompletedCount('Beginner').total} 완료
+                            </span>
+                            <div className="progress-bar">
+                                <div
+                                    className="progress-fill"
+                                    style={{
+                                        width: `${(getCompletedCount('Beginner').completed / getCompletedCount('Beginner').total) * 100}%`
+                                    }}
+                                ></div>
+                            </div>
+                        </div>
+                    </div>
                 </button>
                 <button
                     className={`level-btn intermediate ${selectedLevel === 'Intermediate' ? 'active' : ''}`}
                     onClick={() => setSelectedLevel('Intermediate')}
                 >
-                    🦤 Intermediate Level
-                    <span className="level-desc">Expressing Opinions<br />& Constructing Complex Sentence</span>
+                    <div className="level-content">
+                        <div className="level-header">
+                            <span className="level-icon">🦤</span>
+                            <span className="level-title">Intermediate Level</span>
+                        </div>
+                        <span className="level-desc">Expressing Opinions<br />& Constructing Complex Sentence</span>
+                        <div className="progress-indicator">
+                            <span className="progress-text">
+                                {getCompletedCount('Intermediate').completed}/{getCompletedCount('Intermediate').total} 완료
+                            </span>
+                            <div className="progress-bar">
+                                <div
+                                    className="progress-fill"
+                                    style={{
+                                        width: `${(getCompletedCount('Intermediate').completed / getCompletedCount('Intermediate').total) * 100}%`
+                                    }}
+                                ></div>
+                            </div>
+                        </div>
+                    </div>
                 </button>
                 <button
                     className={`level-btn advanced ${selectedLevel === 'Advanced' ? 'active' : ''}`}
                     onClick={() => setSelectedLevel('Advanced')}
                 >
-                    🦜 Advanced Level
-                    <span className="level-desc">Natural Expressions<br />& Conveying Complex Thoughts</span>
+                    <div className="level-content">
+                        <div className="level-header">
+                            <span className="level-icon">🦜</span>
+                            <span className="level-title">Advanced Level</span>
+                        </div>
+                        <span className="level-desc">Natural Expressions<br />& Conveying Complex Thoughts</span>
+                        <div className="progress-indicator">
+                            <span className="progress-text">
+                                {getCompletedCount('Advanced').completed}/{getCompletedCount('Advanced').total} 완료
+                            </span>
+                            <div className="progress-bar">
+                                <div
+                                    className="progress-fill"
+                                    style={{
+                                        width: `${(getCompletedCount('Advanced').completed / getCompletedCount('Advanced').total) * 100}%`
+                                    }}
+                                ></div>
+                            </div>
+                        </div>
+                    </div>
                 </button>
             </div>
 
             <div className="lesson-list">
                 {lessons.map((lesson) => {
                     const unlocked = isUnlocked(lesson.index);
-                    const status = unlocked ? 'Get Started' : 'Complete Previous Lesson';
-                    const statusType = unlocked ? 'start' : 'lock';
+                    const status = getLessonStatus(lesson.dayNumber);
+
+                    let buttonText = 'Complete Previous Lesson';
+                    let buttonType = 'lock';
+                    let cardClass = 'lesson-card';
+
+                    if (unlocked) {
+                        if (status.isCompleted) {
+                            buttonText = 'Review';
+                            buttonType = 'completed';
+                            cardClass = 'lesson-card completed';
+                        } else {
+                            buttonText = 'Get Started';
+                            buttonType = 'start';
+                        }
+                    }
 
                     return (
-                        <div key={lesson.index} className="lesson-card">
-                            <div className="lesson-day">{lesson.day}</div>
+                        <div key={lesson.index} className={cardClass}>
+                            <div className="lesson-day-container">
+                                <div className="lesson-day">{lesson.day}</div>
+                                {status.isCompleted && (
+                                    <div className="completion-badge">
+                                        <span className="badge-icon">✅</span>
+                                        <span className="badge-score">{status.score}점</span>
+                                    </div>
+                                )}
+                            </div>
                             <div className="lesson-content">
                                 <div className="lesson-topic">
                                     <strong>Topic:</strong> {lesson.topic}
+                                    {status.isCompleted && <span className="completed-indicator">🏆</span>}
                                 </div>
                                 <div className="lesson-expression">
                                     <strong>Key Expression:</strong> {lesson.expression}
                                 </div>
                                 <div className="lesson-example">Ex) {lesson.example}</div>
+                                {status.isCompleted && status.completedAt && (
+                                    <div className="completion-date">
+                                        완료일: {new Date(status.completedAt).toLocaleDateString('ko-KR')}
+                                    </div>
+                                )}
                             </div>
                             <button
-                                className={`lesson-button ${statusType === 'start' ? 'start' : 'disabled'}`}
-                                disabled={statusType !== 'start' || isLoading}
-                                onClick={() => handleStartLesson(lesson.index)}
+                                className={`lesson-button ${buttonType}`}
+                                disabled={buttonType === 'lock' || isLoading}
+                                onClick={() => handleStartLesson(lesson.index, lesson.dayNumber)}
                             >
-                                {isLoading ? 'Loading...' : status}
+                                {isLoading ? 'Loading...' : buttonText}
                             </button>
                         </div>
                     );
