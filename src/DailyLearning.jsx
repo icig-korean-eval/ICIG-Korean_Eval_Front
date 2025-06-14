@@ -9,6 +9,7 @@ export default function DailyLearning() {
     const { completedDays, markDayComplete } = useLevel();
 
     const [selectedLevel, setSelectedLevel] = useState('Beginner');
+    const [isLoading, setIsLoading] = useState(false);
 
     const levelLessons = lessonData[selectedLevel] || [];
 
@@ -18,6 +19,7 @@ export default function DailyLearning() {
         expression: lesson.KeyExpression,
         example: lesson.ExampleSentence,
         index: lesson.Day - 1,
+        situation: lesson.Situation, // API에 보낼 상황 데이터
     }));
 
     const isUnlocked = (index) => {
@@ -25,13 +27,66 @@ export default function DailyLearning() {
         return completedDays[selectedLevel]?.includes(index);
     };
 
-    const handleStartLesson = (index) => {
-        if (index === 0 || isUnlocked(index)) {
-            if (!completedDays[selectedLevel]?.includes(index + 1)) {
-                markDayComplete(selectedLevel, index + 1);
+    // 채팅 생성 API 호출 함수
+    const createChat = async (situation) => {
+        try {
+            const token = 'ZATae5h-sckvlY06-aks7r-Kn2uMq';
+
+            const headers = {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            };
+
+            console.log('채팅 생성 API 호출 중...');
+
+            const response = await fetch('/api/v1/chat', {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify({
+                    situation: situation
+                })
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('API 오류:', errorText);
+                throw new Error(`API 요청 실패: ${response.status} - ${errorText}`);
             }
-            // 레슨 상세 페이지로 이동 (레벨과 레슨 인덱스를 파라미터로 전달)
-            navigate(`/lesson/${selectedLevel}/${index + 1}`);
+
+            const data = await response.json();
+            console.log('채팅 생성 성공:', data);
+            return data.chat_id;
+        } catch (error) {
+            console.error('채팅 생성 오류:', error);
+            throw error;
+        }
+    };
+
+    const handleStartLesson = async (index) => {
+        if (index === 0 || isUnlocked(index)) {
+            setIsLoading(true);
+
+            try {
+                // 완료 상태 업데이트
+                if (!completedDays[selectedLevel]?.includes(index + 1)) {
+                    markDayComplete(selectedLevel, index + 1);
+                }
+
+                console.log('=== 레슨 시작 ===');
+                console.log('레벨:', selectedLevel);
+                console.log('일차:', index + 1);
+
+                // 채팅 생성 없이 바로 LessonDetail 페이지로 이동
+                navigate(`/lesson/${selectedLevel}/${index + 1}`);
+
+                console.log('페이지 이동 완료');
+
+            } catch (error) {
+                console.error('Failed to start lesson:', error);
+                alert('레슨을 시작하는 중 오류가 발생했습니다. 다시 시도해주세요.');
+            } finally {
+                setIsLoading(false);
+            }
         }
     };
 
@@ -86,10 +141,10 @@ export default function DailyLearning() {
                             </div>
                             <button
                                 className={`lesson-button ${statusType === 'start' ? 'start' : 'disabled'}`}
-                                disabled={statusType !== 'start'}
+                                disabled={statusType !== 'start' || isLoading}
                                 onClick={() => handleStartLesson(lesson.index)}
                             >
-                                {status}
+                                {isLoading ? 'Loading...' : status}
                             </button>
                         </div>
                     );
