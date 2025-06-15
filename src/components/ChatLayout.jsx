@@ -17,6 +17,7 @@ export default function ChatLayout() {
     const [error, setError] = useState(null)
     const [chatRoomData, setChatRoomData] = useState(null)
     const [isLoading, setIsLoading] = useState(true);
+    const [feedback, setFeedback] = useState(null)
 
 
     const [isRecording, setIsRecording] = useState(false);
@@ -133,6 +134,7 @@ export default function ChatLayout() {
                     "content": json.reply
                 }
             ]);
+            setFeedback(json.feedback)
         } catch (e) {
             setChatData(prev => [
                 ...prev,
@@ -144,6 +146,7 @@ export default function ChatLayout() {
                     "content": ""
                 }
             ]);
+            setFeedback(null)
             console.error(e)
         }
     }
@@ -413,11 +416,36 @@ export default function ChatLayout() {
                 <div className='split-container right-section'>
                     <div className='section-title'>📢 Automated Feedback System</div>
                     <div className='section-content'>
-
+                        {feedback === null ? null : (
+                            <div>
+                                <div className='feedback-title'>Grammatical Errors</div>
+                                {
+                                    feedback.grammatical_errors.map((value, idx) => (
+                                        <div className='feedback-content'>
+                                            <div className='feedback-content-title'>Feedback {idx + 1}</div>
+                                            <div className='feedback-content-main'>Incorrect Part: {value['Incorrect part']}</div>
+                                            <div className='feedback-content-main'>Corrected Version: {value['Corrected version']}</div>
+                                            <div className='feedback-content-main'>Reason: {value['Reason']}</div>
+                                        </div>
+                                    ))
+                                }
+                                <div className='feedback-title title2'>Better Expressions</div>
+                                {
+                                    feedback.better_expressions.map((value, idx) => (
+                                        <div className='feedback-content'>
+                                            <div className='feedback-content-title'>Suggestion {idx + 1}</div>
+                                            <div className='feedback-content-main'>Original Part: {value['Original part']}</div>
+                                            <div className='feedback-content-main'>Suggestion: {value['Suggestion']}</div>
+                                            <div className='feedback-content-main'>Reason: {value['Reason']}</div>
+                                        </div>
+                                    ))
+                                }
+                            </div>
+                        )}
                     </div>
-                    <div className='playbutton'>
-                        <img src={logoPlay} width='40' height='40'/>
-                    </div>
+                    {/*<div className='playbutton'>*/}
+                    {/*    <img src={logoPlay} width='40' height='40'/>*/}
+                    {/*</div>*/}
                 </div>
             </div>
         </div>
