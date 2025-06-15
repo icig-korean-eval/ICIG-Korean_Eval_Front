@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 /* Reset default margins and fonts */
 body {
   margin: 0;

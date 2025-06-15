@@ -1,0 +1,237 @@
+/* 학습 인터페이스 스타일 */
+
+/* 화살표 버튼 (나가기) */
+.arrow-button {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  top: 20px;
+  left: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+/* 로고 아이콘 스타일 */
+.logo-icon {
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  top: 11px;
+  left: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 타이틀 스타일 */
+.title {
+  width: 268px;
+  color: rgba(29,0,0,1);
+  position: absolute;
+  top: 29px;
+  left: 136px;
+  font-family: Pretendard, sans-serif;
+  font-weight: bold;
+  font-size: 24px;
+}
+
+/* 채팅 컨테이너 */
+.chat-container {
+  width: 643px;
+  height: 700px;
+  position: absolute;
+  top: 114px;
+  left: 62px;
+  overflow-y: auto;
+  padding-bottom: 100px;
+}
+
+/* 피드백 패널 - 메인 배경 */
+.feedback-panel {
+  width: 662px;
+  height: 841px;
+  background: rgba(228,228,228,1);
+  position: absolute;
+  top: 114px;
+  left: 900px;
+  border-radius: 53px;
+  overflow: hidden;
+}
+
+/* 피드백 배경 이미지 */
+.feedback-background-image {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0.4;
+  z-index: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 피드백 제목 */
+.feedback-title {
+  width: 445px;
+  color: rgba(61,60,60,1);
+  position: absolute;
+  top: 23px;
+  left: 103px; /* 왼쪽에서 더 멀리 오른쪽으로 이동 */
+  font-family: Pretendard, sans-serif;
+  font-weight: bold;
+  font-size: 29px;
+  text-align: left;
+  right: 81px; /* 오른쪽 끝과 여백 유지 */
+}
+
+/* 피드백 배경 박스 */
+.feedback-box {
+  width: 570px;
+  min-height: 150px;
+  max-height: 700px;
+  background: rgba(169,227,255,0.75);
+  position: absolute;
+  top: 78px;
+  left: 46px;
+  border-radius: 20px;
+  overflow: auto;
+  padding: 20px 25px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 피드백 내용 */
+.feedback-content {
+  width: 100%;
+  color: rgba(29,0,0,1);
+  position: relative;
+  font-family: Pretendard, sans-serif;
+  font-weight: Medium;
+  font-size: 20px;
+  line-height: 1.6;
+  white-space: pre-line;
+  text-align: left;
+  margin-bottom: 40px;
+}
+
+/* AI 메시지 말풍선 */
+.ai-message-bubble {
+  width: 643px;
+  min-height: 106px;
+  background: rgba(241,240,240,1);
+  border-radius: 53px;
+  padding: 0 30px;
+  margin-bottom: 20px;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* 사용자 메시지 말풍선 */
+.user-message-bubble {
+  width: 643px;
+  min-height: 106px;
+  background: rgba(223,244,255,1);
+  border-radius: 53px;
+  padding: 0 30px;
+  margin-bottom: 20px;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* 메시지 텍스트 스타일 */
+.message-text {
+  width: 420px;
+  color: rgba(29,0,0,1);
+  font-family: Pretendard, sans-serif;
+  font-weight: 500;
+  font-size: 20px;
+  margin-left: 100px;
+  padding: 20px 0;
+}
+
+/* AI 아바타 */
+.ai-avatar {
+  width: 65px;
+  height: 65px;
+  position: absolute;
+  top: 20px;
+  left: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* 사용자 아바타 */
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  position: absolute;
+  top: 33px;
+  left: 43px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 재생 버튼 */
+.play-button {
+  width: 35px;
+  height: 35px;
+  background: rgba(29,0,0,1);
+  position: absolute;
+  right: 30px;
+  top: 35px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+/* 마이크 버튼 */
+.mic-button {
+  width: 60px;
+  height: 60px;
+  background: white;
+  border-radius: 50%;
+  position: absolute;
+  bottom: 50px;
+  left: 350px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.mic-button.recording {
+  background: rgba(255,0,0,0.1);
+}
+
+/* 반응형 스타일 */
+@media (max-width: 1440px) {
+  .feedback-panel {
+    left: 720px;
+    width: 600px;
+  }
+  
+  .feedback-title {
+    left: 830px;
+  }
+  
+  .feedback-content {
+    left: 780px;
+  }
+}

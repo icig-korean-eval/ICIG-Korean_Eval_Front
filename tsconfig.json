@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "jsx": "react-jsx",        // React 17+ JSX 변환
+    "moduleResolution": "node",
+    "allowJs": true,           // .js/.jsx 파일도 컴파일 대상에 포함
+    "checkJs": false,          // JS 파일 타입 체크 여부 (원하면 true로)
+    "strict": true,            // 엄격 모드
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "baseUrl": "src",
+    "paths": {                 // 절대경로 매핑 (선택)
+      "@/*": ["*"]
+    }
+  },
+  "include": ["src/**/*"],     // .js/.jsx, .ts/.tsx 모두 포함
+  "exclude": ["node_modules"]
+}

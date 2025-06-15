@@ -1,0 +1,51 @@
+.daily-learning {
+  padding: 20px;
+  font-family: 'Arial', sans-serif;
+  background-color: #FFFFFF;
+}
+
+.dl-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.dl-header h2 {
+  font-size: 24px;
+  font-weight: bold;
+  flex: 1;
+  text-align: center;
+  margin: 0;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  margin-right: 10px;
+  color: #333;
+}
+
+.chatroom-root {
+
+}
+
+.chatroom-list-root {
+  width: 100%;
+  background-color: #FFFAD0;
+  margin-bottom: 12px;
+  padding: 18px;
+  border-radius: 12px;
+  cursor: pointer;
+  line-height: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.chatroom-title {
+  font-size: 20px;
+  font-weight: 600;
+}
