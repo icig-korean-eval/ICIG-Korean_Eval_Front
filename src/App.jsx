@@ -4,6 +4,9 @@ import HomePage from './HomePage';
 import DailyLearning from './DailyLearning';
 import LessonDetail from './LessonDetail'; // LessonDetail import 추가
 import { LevelProvider } from './LevelTabs';
+import MainChatLayout from "./components/layout/MainChatLayout";
+import MainChatRoomLayout from "./components/layout/MainChatRoomLayout";
+import ChatLayout from "./components/ChatLayout";
 
 export default function App() {
   return (
@@ -13,6 +16,8 @@ export default function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/daily" element={<DailyLearning />} />
           <Route path="/lesson/:level/:day" element={<LessonDetail />} /> {/* 새로운 라우트 추가 */}
+            <Route path='/context' element={<MainChatRoomLayout />}></Route>
+          <Route path='/context/:chatId' element={<ChatLayout />}></Route>
         </Routes>
       </Router>
     </LevelProvider>
