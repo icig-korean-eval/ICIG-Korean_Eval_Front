@@ -10,14 +10,14 @@ export default function LessonDetail() {
 
     const { markLessonComplete, getLessonInfo } = useLevel();
 
-    // 녹음 관련 state와 ref
+    // 녹음 관련 state와 ref (기존 기능 유지)
     const [isRecording, setIsRecording] = useState(false);
     const [audioURL, setAudioURL] = useState(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [isTranscribing, setIsTranscribing] = useState(false);
     const audioRef = useRef(null);
 
-    // TTS 관련 state (Web Speech API 사용)
+    // TTS 관련 state (기존 기능 유지)
     const [isTTSPlaying, setIsTTSPlaying] = useState(false);
     const [isTTSLoading, setIsTTSLoading] = useState(false);
 
@@ -26,7 +26,7 @@ export default function LessonDetail() {
     const procRef = useRef(null);
     const streamRef = useRef(null);
 
-    // 레슨 완료 상태
+    // 레슨 완료 상태 (기존 기능 유지)
     const [isLessonCompleted, setIsLessonCompleted] = useState(false);
     const [showCompletionMessage, setShowCompletionMessage] = useState(false);
 
@@ -42,19 +42,17 @@ export default function LessonDetail() {
         }
     };
 
-    // Web Speech API를 사용한 TTS 함수
+    // 모든 기존 함수들 유지
     const playTTS = () => {
         if (!currentLesson?.ExampleSentence) return;
 
         try {
-            // 현재 재생 중이면 중지
             if (isTTSPlaying) {
                 window.speechSynthesis.cancel();
                 setIsTTSPlaying(false);
                 return;
             }
 
-            // Web Speech API 지원 확인
             if (!('speechSynthesis' in window)) {
                 alert('이 브라우저는 음성 합성을 지원하지 않습니다.');
                 return;
@@ -62,16 +60,12 @@ export default function LessonDetail() {
 
             setIsTTSLoading(true);
 
-            // SpeechSynthesisUtterance 객체 생성
             const utterance = new SpeechSynthesisUtterance(currentLesson.ExampleSentence);
-
-            // 한국어 설정
             utterance.lang = 'ko-KR';
-            utterance.rate = 0.8; // 조금 천천히
-            utterance.pitch = 1.0; // 기본 음높이
-            utterance.volume = 1.0; // 최대 볼륨
+            utterance.rate = 0.8;
+            utterance.pitch = 1.0;
+            utterance.volume = 1.0;
 
-            // 한국어 음성 찾기
             const voices = window.speechSynthesis.getVoices();
             const koreanVoice = voices.find(voice =>
                 voice.lang.includes('ko') || voice.lang.includes('KR')
@@ -84,7 +78,6 @@ export default function LessonDetail() {
                 console.log('한국어 음성을 찾을 수 없어 기본 음성 사용');
             }
 
-            // 이벤트 리스너 설정
             utterance.onstart = () => {
                 console.log('TTS 시작');
                 setIsTTSLoading(false);
@@ -103,7 +96,6 @@ export default function LessonDetail() {
                 alert('음성 재생 중 오류가 발생했습니다.');
             };
 
-            // 음성 재생 시작
             window.speechSynthesis.speak(utterance);
 
         } catch (error) {
@@ -114,7 +106,6 @@ export default function LessonDetail() {
         }
     };
 
-    // TTS 중지 함수 (컴포넌트 언마운트 시)
     const stopTTS = () => {
         if (window.speechSynthesis.speaking) {
             window.speechSynthesis.cancel();
@@ -122,7 +113,7 @@ export default function LessonDetail() {
         }
     };
 
-    // IPA 변환 함수
+    // 모든 기존 발음 분석 관련 함수들 유지...
     const convertTextToIPA = async (text) => {
         try {
             const token = 'ZATae5h-sckvlY06-aks7r-Kn2uMq';
@@ -150,7 +141,6 @@ export default function LessonDetail() {
         }
     };
 
-    // 발음 비교 함수
     const comparePronunciation = (originalIPA, userIPA) => {
         console.log('=== 발음 비교 ===');
         console.log('원본 IPA:', originalIPA);
@@ -199,7 +189,6 @@ export default function LessonDetail() {
             feedback = '발음을 다시 연습해보세요. 예시를 들어보고 따라해보세요. 🔄';
         }
 
-        // 70점 이상일 때 레슨 완료 처리
         if (score >= 70 && !isLessonCompleted) {
             console.log('=== 레슨 완료 처리 ===');
             console.log('점수:', score, '레벨:', level, '일차:', day);
@@ -209,7 +198,6 @@ export default function LessonDetail() {
                 setIsLessonCompleted(true);
                 setShowCompletionMessage(true);
 
-                // 3초 후 완료 메시지 숨기기
                 setTimeout(() => {
                     setShowCompletionMessage(false);
                 }, 3000);
@@ -228,28 +216,7 @@ export default function LessonDetail() {
     const [lessonIPA, setLessonIPA] = useState('');
     const [pronunciationResult, setPronunciationResult] = useState(null);
 
-    // 컴포넌트 마운트 시 레슨 텍스트의 IPA 생성
-    useEffect(() => {
-        if (currentLesson && currentLesson.ExampleSentence) {
-            console.log('레슨 텍스트 IPA 변환 시작:', currentLesson.ExampleSentence);
-            convertTextToIPA(currentLesson.ExampleSentence).then(result => {
-                if (result && result.original) {
-                    setLessonIPA(result.original);
-                    console.log('레슨 IPA 설정 완료:', result.original);
-                }
-            });
-        }
-    }, [currentLesson]);
-
-    // 컴포넌트 마운트 시 레슨 완료 상태 확인
-    useEffect(() => {
-        const lessonInfo = getLessonInfo(level, parseInt(day));
-        if (lessonInfo && lessonInfo.completed && lessonInfo.score >= 70) {
-            setIsLessonCompleted(true);
-        }
-    }, [level, day, getLessonInfo]);
-
-    // 음성을 텍스트로 변환하는 함수
+    // 모든 기존 녹음 관련 함수들 유지...
     const transcribeAudio = async (wavBlob) => {
         try {
             setIsTranscribing(true);
@@ -276,7 +243,6 @@ export default function LessonDetail() {
                 const data = JSON.parse(responseText);
                 const transcribedText = data.transcription || '';
 
-                // 음성 인식 성공 시 발음 비교 수행
                 if (transcribedText && lessonIPA) {
                     console.log('발음 비교 시작...');
                     console.log('인식된 텍스트:', transcribedText);
@@ -287,7 +253,6 @@ export default function LessonDetail() {
                         const comparison = comparePronunciation(lessonIPA, userIPAResult.original);
                         setPronunciationResult(comparison);
 
-                        // 발음 결과를 사용자에게 표시
                         setTimeout(() => {
                             alert(`발음 점수: ${comparison.score}점\n${comparison.feedback}`);
                         }, 500);
@@ -312,7 +277,7 @@ export default function LessonDetail() {
         }
     };
 
-    // 녹음 관련 유틸리티 함수들
+    // 녹음 관련 유틸리티 함수들 (기존 유지)
     function mergeBuffers(buffers, totalLen) {
         const result = new Float32Array(totalLen);
         let offset = 0;
@@ -350,10 +315,8 @@ export default function LessonDetail() {
         return view;
     }
 
-    // 녹음 시작 함수
     const startRecording = async () => {
         try {
-            // 이전 녹음 정리
             if (audioURL) {
                 URL.revokeObjectURL(audioURL);
                 setAudioURL(null);
@@ -388,14 +351,12 @@ export default function LessonDetail() {
         }
     };
 
-    // 녹음 중지 함수
     const stopRecording = () => {
         if (procRef.current && isRecording) {
             procRef.current.disconnect();
             ctxRef.current.close();
             streamRef.current.getTracks().forEach((t) => t.stop());
 
-            // WAV 생성
             const chunks = chunksRef.current;
             const totalLen = chunks.reduce((sum, c) => sum + c.length, 0);
             const merged = mergeBuffers(chunks, totalLen);
@@ -417,7 +378,6 @@ export default function LessonDetail() {
         }
     };
 
-    // 마이크 버튼 클릭 핸들러
     const handleMicClick = () => {
         if (isRecording) {
             stopRecording();
@@ -426,7 +386,6 @@ export default function LessonDetail() {
         }
     };
 
-    // 재생 버튼 클릭 핸들러
     const handlePlayClick = () => {
         if (!audioURL || !audioRef.current) return;
 
@@ -439,27 +398,42 @@ export default function LessonDetail() {
         }
     };
 
-    // 오디오 재생 종료 핸들러
     const handleAudioEnded = () => {
         setIsPlaying(false);
     };
 
-    // 컴포넌트 마운트 시 음성 로드 및 언마운트 시 cleanup
+    // useEffect들 유지
     useEffect(() => {
-        // 음성 목록 로드 (브라우저에 따라 시간이 걸릴 수 있음)
+        if (currentLesson && currentLesson.ExampleSentence) {
+            console.log('레슨 텍스트 IPA 변환 시작:', currentLesson.ExampleSentence);
+            convertTextToIPA(currentLesson.ExampleSentence).then(result => {
+                if (result && result.original) {
+                    setLessonIPA(result.original);
+                    console.log('레슨 IPA 설정 완료:', result.original);
+                }
+            });
+        }
+    }, [currentLesson]);
+
+    useEffect(() => {
+        const lessonInfo = getLessonInfo(level, parseInt(day));
+        if (lessonInfo && lessonInfo.completed && lessonInfo.score >= 70) {
+            setIsLessonCompleted(true);
+        }
+    }, [level, day, getLessonInfo]);
+
+    useEffect(() => {
         const loadVoices = () => {
             const voices = window.speechSynthesis.getVoices();
             console.log('사용 가능한 음성:', voices.filter(v => v.lang.includes('ko')));
         };
 
-        // 음성 목록이 로드되면 실행
         if (window.speechSynthesis.onvoiceschanged !== undefined) {
             window.speechSynthesis.onvoiceschanged = loadVoices;
         }
-        loadVoices(); // 즉시 한 번 실행
+        loadVoices();
 
         return () => {
-            // 컴포넌트 언마운트 시 TTS 중지
             stopTTS();
             if (audioURL) {
                 URL.revokeObjectURL(audioURL);
@@ -472,180 +446,250 @@ export default function LessonDetail() {
 
     if (!currentLesson) {
         return (
-            <div className="lesson-detail">
-                <header className="lesson-header">
-                    <button className="back-button" onClick={() => navigate(-1)}>←</button>
-                    <h2>📖 Daily Learning</h2>
+            <div className="lesson-detail-modern">
+                <div className="bg-shapes">
+                    <div className="shape shape1"></div>
+                    <div className="shape shape2"></div>
+                    <div className="shape shape3"></div>
+                </div>
+
+                <header className="lesson-header-modern">
+                    <div className="header-left">
+                        <button className="back-btn" onClick={() => navigate(-1)}>
+                            <span>←</span>
+                        </button>
+                        <div className="lesson-info">
+                            <h1>📖 Daily Learning</h1>
+                        </div>
+                    </div>
                 </header>
-                <div className="lesson-content">
-                    <p>레슨을 찾을 수 없습니다.</p>
+
+                <div className="lesson-container">
+                    <div className="error-message">
+                        <h2>레슨을 찾을 수 없습니다.</h2>
+                        <button onClick={() => navigate(-1)} className="back-to-lessons">
+                            돌아가기
+                        </button>
+                    </div>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="lesson-detail">
-            <header className="lesson-header">
-                <button className="back-button" onClick={() => navigate(-1)}>←</button>
-                <h2>📖 Daily Learning</h2>
+        <div className="lesson-detail-modern">
+            {/* Background Shapes */}
+            <div className="bg-shapes">
+                <div className="shape shape1"></div>
+                <div className="shape shape2"></div>
+                <div className="shape shape3"></div>
+            </div>
+
+            {/* Header */}
+            <header className="lesson-header-modern">
+                <div className="header-left">
+                    <button className="back-btn" onClick={() => navigate(-1)}>
+                        <span>←</span>
+                    </button>
+                    <div className="lesson-info">
+                        <h1>
+                            <span className="lesson-icon">{getLevelIcon()}</span>
+                            Day {currentLesson.Day} - {currentLesson.Topic}
+                        </h1>
+                        <div className="lesson-meta">
+                            <span className="level-badge">{level}</span>
+                            {isLessonCompleted && (
+                                <span className="completion-badge-header">✅ 완료</span>
+                            )}
+                        </div>
+                    </div>
+                </div>
             </header>
 
-            <div className="lesson-content">
-                <div className="lesson-title">
-                    <span className="lesson-icon">{getLevelIcon()}</span>
-                    <h1>Day {currentLesson.Day} - {currentLesson.Topic}</h1>
-                    {isLessonCompleted && (
-                        <span className="completion-badge">✅ 완료</span>
+            {/* Main Content */}
+            <main className="lesson-main">
+                <div className="lesson-container">
+                    {/* 레슨 완료 메시지 */}
+                    {showCompletionMessage && (
+                        <div className="completion-message-modern">
+                            <div className="completion-icon">🎉</div>
+                            <div className="completion-text">
+                                <h3>축하합니다!</h3>
+                                <p>레슨을 완료했습니다!<br />다음 레슨이 해제되었습니다.</p>
+                            </div>
+                        </div>
                     )}
-                </div>
 
-                {/* 레슨 완료 메시지 */}
-                {showCompletionMessage && (
-                    <div className="completion-message">
-                        🎉 축하합니다! 레슨을 완료했습니다!
-                        <br />다음 레슨이 해제되었습니다.
-                    </div>
-                )}
+                    {/* AI Tutor Section */}
+                    <section className="chat-section tutor-section">
+                        <div className="avatar tutor-avatar">
+                            🤖
+                        </div>
+                        <div className="message-bubble tutor-bubble">
+                            <div className="tutor-greeting">
+                                <h3>Hi, ICIGI! 👋</h3>
+                                <p>Today, we're going to learn how to use <strong>"{currentLesson.KeyExpression}"</strong> in Korean.</p>
+                                <p>Let's start with a simple sentence!</p>
+                            </div>
 
-                <div className="tutor-section">
-                    <div className="tutor-avatar">👤</div>
-                    <div className="tutor-message">
-                        <p>Hi, ICIGI</p>
-                        <p>Today, we're going to learn how to use "{currentLesson.KeyExpression}" in Korean.</p>
-                        <p>Let's start with a simple sentence!</p>
+                            <div className="korean-example-modern">
+                                <div className="sentence-header">
+                                    <div className="korean-text">
+                                        👉 "{currentLesson.ExampleSentence}"
+                                    </div>
+                                    <button
+                                        className={`tts-button-modern ${isTTSPlaying ? 'playing' : ''}`}
+                                        onClick={playTTS}
+                                        disabled={isTTSLoading}
+                                        title="음성으로 듣기"
+                                    >
+                                        {isTTSLoading ? (
+                                            <span className="loading-spinner">⏳</span>
+                                        ) : isTTSPlaying ? (
+                                            <span className="speaker-icon">🔊</span>
+                                        ) : (
+                                            <span className="speaker-icon">🔈</span>
+                                        )}
+                                    </button>
+                                </div>
 
-                        <div className="korean-example">
-                            <div className="sentence-header">
-                                <p className="korean-text">👉 "{currentLesson.ExampleSentence}"</p>
-                                <button
-                                    className={`tts-button ${isTTSPlaying ? 'playing' : ''}`}
-                                    onClick={playTTS}
-                                    disabled={isTTSLoading}
-                                    title="음성으로 듣기"
-                                >
-                                    {isTTSLoading ? (
-                                        <span className="loading-spinner">⏳</span>
-                                    ) : isTTSPlaying ? (
-                                        <span className="speaker-icon">🔊</span>
-                                    ) : (
-                                        <span className="speaker-icon">🔈</span>
+                                <div className="lesson-details">
+                                    <div className="detail-item">
+                                        <span className="label">Key Expression:</span>
+                                        <span className="value">{currentLesson.KeyExpression}</span>
+                                    </div>
+                                    <div className="detail-item">
+                                        <span className="label">💬 Topic:</span>
+                                        <span className="value">{currentLesson.Topic}</span>
+                                    </div>
+                                    {lessonIPA && (
+                                        <div className="detail-item">
+                                            <span className="label">🔊 IPA:</span>
+                                            <span className="value ipa-text">/{lessonIPA}/</span>
+                                        </div>
                                     )}
+                                </div>
+                            </div>
+
+                            <div className="instruction-box">
+                                <p>🎯 <strong>목표: 70점 이상을 받아서 다음 레슨을 해제하세요!</strong></p>
+                                <p>Click the speaker button to listen, then try saying it out loud!</p>
+                                {isLessonCompleted && (
+                                    <div className="completion-note-modern">
+                                        ✅ 이미 완료한 레슨입니다. 복습해보세요!
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* 발음 비교 결과 */}
+                    {pronunciationResult && (
+                        <section className="pronunciation-result-modern">
+                            <div className="result-header">
+                                <h3>🎯 발음 분석 결과</h3>
+                                <span className={`score-badge ${pronunciationResult.score >= 70 ? 'good' : 'needs-practice'}`}>
+                                    {pronunciationResult.score}점
+                                </span>
+                            </div>
+
+                            <div className="feedback-content">
+                                <p className="feedback-text">{pronunciationResult.feedback}</p>
+
+                                <div className="ipa-comparison-modern">
+                                    <div className="ipa-row">
+                                        <span className="label">목표:</span>
+                                        <span className="ipa">/{pronunciationResult.originalIPA}/</span>
+                                    </div>
+                                    <div className="ipa-row">
+                                        <span className="label">당신:</span>
+                                        <span className="ipa">/{pronunciationResult.userIPA}/</span>
+                                    </div>
+                                </div>
+
+                                {pronunciationResult.differences.length > 0 && (
+                                    <div className="differences-modern">
+                                        <h4>개선할 부분:</h4>
+                                        <ul>
+                                            {pronunciationResult.differences.slice(0, 3).map((diff, index) => (
+                                                <li key={index}>
+                                                    위치 {diff.position + 1}: '{diff.expected}' → '{diff.actual}'
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
+
+                                <button
+                                    className="try-again-btn-modern"
+                                    onClick={() => setPronunciationResult(null)}
+                                >
+                                    다시 시도하기
+                                    <span className="btn-arrow">🔄</span>
                                 </button>
                             </div>
-                            <p className="translation">Key Expression: {currentLesson.KeyExpression}</p>
-                            <p className="meaning">💬 Topic: {currentLesson.Topic}</p>
-                            {lessonIPA && (
-                                <p className="ipa-text">🔊 IPA: /{lessonIPA}/</p>
-                            )}
-                        </div>
-
-                        <p>Click the speaker button to listen, then try saying it out loud!</p>
-                        <p><strong>목표: 70점 이상을 받아서 다음 레슨을 해제하세요!</strong></p>
-                        {isLessonCompleted && (
-                            <p className="completion-note">✅ 이미 완료한 레슨입니다. 복습해보세요!</p>
-                        )}
-                    </div>
-                </div>
-
-                {/* 발음 비교 결과 표시 */}
-                {pronunciationResult && (
-                    <div className="pronunciation-result">
-                        <div className="result-header">
-                            <h3>🎯 발음 분석 결과</h3>
-                            <span className={`score ${pronunciationResult.score >= 70 ? 'good' : 'needs-practice'}`}>
-                                {pronunciationResult.score}점
-                            </span>
-                        </div>
-                        <p className="feedback">{pronunciationResult.feedback}</p>
-
-                        <div className="ipa-comparison">
-                            <div className="ipa-row">
-                                <span className="label">목표:</span>
-                                <span className="ipa">/{pronunciationResult.originalIPA}/</span>
-                            </div>
-                            <div className="ipa-row">
-                                <span className="label">당신:</span>
-                                <span className="ipa">/{pronunciationResult.userIPA}/</span>
-                            </div>
-                        </div>
-
-                        {pronunciationResult.differences.length > 0 && (
-                            <div className="differences">
-                                <h4>개선할 부분:</h4>
-                                <ul>
-                                    {pronunciationResult.differences.slice(0, 3).map((diff, index) => (
-                                        <li key={index}>
-                                            위치 {diff.position + 1}: '{diff.expected}' → '{diff.actual}'
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
-
-                        <button
-                            className="try-again-btn"
-                            onClick={() => setPronunciationResult(null)}
-                        >
-                            다시 시도하기
-                        </button>
-                    </div>
-                )}
-
-                {/* 오디오 재생 컨트롤 */}
-                {audioURL && (
-                    <div className="audio-controls">
-                        <button
-                            className={`audio-button has-audio ${isPlaying ? 'playing' : ''}`}
-                            onClick={handlePlayClick}
-                        >
-                            <span className="play-icon">{isPlaying ? '⏸' : '▶'}</span>
-                        </button>
-                        <p className="audio-label">녹음된 음성 재생</p>
-                    </div>
-                )}
-
-                {/* 음성 녹음 섹션 */}
-                <div className="recording-section">
-                    <div className="recording-instruction">
-                        <p>🎤 아래 버튼을 눌러서 예시 문장을 따라 말해보세요!</p>
-                        <p className="target-sentence">"{currentLesson.ExampleSentence}"</p>
-                    </div>
-
-                    <div className="recording-controls">
-                        <button
-                            className={`mic-button-large ${isRecording ? 'recording' : ''}`}
-                            onClick={handleMicClick}
-                            disabled={isTranscribing}
-                        >
-                            {isRecording ? (
-                                <span className="recording-text">
-                                    <span className="mic-icon">⏹️</span>
-                                    <span>녹음 중지</span>
-                                </span>
-                            ) : (
-                                <span className="recording-text">
-                                    <span className="mic-icon">🎤</span>
-                                    <span>{isTranscribing ? '분석 중...' : '녹음 시작'}</span>
-                                </span>
-                            )}
-                        </button>
-                    </div>
-
-                    {isTranscribing && (
-                        <div className="analyzing-message">
-                            <p>🔄 음성을 분석하고 있습니다...</p>
-                        </div>
+                        </section>
                     )}
-                </div>
 
-                {/* 숨겨진 오디오 엘리먼트 */}
-                <audio
-                    ref={audioRef}
-                    onEnded={handleAudioEnded}
-                    style={{ display: 'none' }}
-                />
-            </div>
+                    {/* 오디오 재생 컨트롤 */}
+                    {audioURL && (
+                        <section className="audio-section">
+                            <div className="audio-controls-modern">
+                                <button
+                                    className={`audio-play-btn ${isPlaying ? 'playing' : ''}`}
+                                    onClick={handlePlayClick}
+                                >
+                                    <span className="play-icon">{isPlaying ? '⏸️' : '▶️'}</span>
+                                </button>
+                                <span className="audio-label">녹음된 음성 재생</span>
+                            </div>
+                        </section>
+                    )}
+
+                    {/* 음성 녹음 섹션 */}
+                    <section className="recording-section-modern">
+                        <div className="recording-header">
+                            <h3>🎤 음성 녹음하기</h3>
+                            <p>아래 버튼을 눌러서 예시 문장을 따라 말해보세요!</p>
+                        </div>
+
+                        <div className="target-sentence-modern">
+                            "{currentLesson.ExampleSentence}"
+                        </div>
+
+                        <div className="recording-controls-modern">
+                            <button
+                                className={`mic-button-modern ${isRecording ? 'recording' : ''}`}
+                                onClick={handleMicClick}
+                                disabled={isTranscribing}
+                            >
+                                <div className="mic-content">
+                                    <span className="mic-icon">
+                                        {isRecording ? '⏹️' : '🎤'}
+                                    </span>
+                                    <span className="mic-text">
+                                        {isRecording ? '녹음 중지' : (isTranscribing ? '분석 중...' : '녹음 시작')}
+                                    </span>
+                                </div>
+                            </button>
+                        </div>
+
+                        {isTranscribing && (
+                            <div className="analyzing-message-modern">
+                                <div className="analyzing-spinner">🔄</div>
+                                <p>음성을 분석하고 있습니다...</p>
+                            </div>
+                        )}
+                    </section>
+
+                    {/* 숨겨진 오디오 엘리먼트 */}
+                    <audio
+                        ref={audioRef}
+                        onEnded={handleAudioEnded}
+                        style={{ display: 'none' }}
+                    />
+                </div>
+            </main>
         </div>
     );
 }
