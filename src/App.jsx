@@ -4,7 +4,6 @@ import HomePage from './HomePage';
 import DailyLearning from './DailyLearning';
 import LessonDetail from './LessonDetail'; // LessonDetail import 추가
 import { LevelProvider } from './LevelTabs';
-import MainChatLayout from "./components/layout/MainChatLayout";
 import MainChatRoomLayout from "./components/layout/MainChatRoomLayout";
 import ChatLayout from "./components/ChatLayout";
 
