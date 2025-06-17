@@ -1,11 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
 import React, { useEffect, useRef, useState } from "react";
-import logoIcon from '../assets/icons/clarity_talk-bubbles-outline-badged.svg';
-import logoPlay from '../assets/images/gridicons_play.png'
-import logoMic from '../assets/icons/mic.svg'
-import logoStop from '../assets/icons/stop.svg'
-import logoChat from '../assets/images/alstj1.png'
-import logoSmile from '../assets/images/Vector.png'
 import '../Style/Chat.scss'
 
 export default function ChatLayout() {
@@ -370,18 +364,6 @@ export default function ChatLayout() {
             stopRecording();
         } else {
             startRecording();
-        }
-    };
-
-    const handlePlayClick = () => {
-        if (!audioURL || !audioRef.current) return;
-
-        if (isPlaying) {
-            audioRef.current.pause();
-            setIsPlaying(false);
-        } else {
-            audioRef.current.play();
-            setIsPlaying(true);
         }
     };
 

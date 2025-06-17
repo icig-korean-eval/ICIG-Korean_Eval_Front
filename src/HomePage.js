@@ -15,13 +15,12 @@ export default function HomePage() {
             <header className="modern-header">
                 <div className="logo-section">
                     <div className="logo-icon">AI</div>
-                    <span className="service-name">서비스 이름</span>
+                    <span className="service-name">LearnK</span>
                 </div>
                 <nav className="main-nav">
                     <Link to="/" className="nav-link active">Home</Link>
                     <Link to="/context" className="nav-link">Context-aware learning</Link>
                     <Link to="/daily" className="nav-link">Daily Learning</Link>
-                    <Link to="/settings" className="nav-link">Settings</Link>
                 </nav>
             </header>
 
