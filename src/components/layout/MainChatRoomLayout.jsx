@@ -80,6 +80,29 @@ export default function MainChatRoomLayout() {
         fetchData();
     };
 
+    const handleDeleteChatRoom = (chatId, idx) => {
+        const fetchData = async () => {
+            setIsLoading(true);
+            try {
+                const res = await fetch(`/api/v1/chat/${chatId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': 'Bearer ZATae5h-sckvlY06-aks7r-Kn2uMq',
+                    },
+                });
+
+                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                setChatRoomData(chatRoomData.filter((_, i) => i !== idx))
+            } catch (err) {
+                window.alert(`채팅방 삭제 오류 ${err}`);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchData();
+    };
+
     if (error) {
         return (
             <div className="context-aware-modern">
@@ -194,6 +217,7 @@ export default function MainChatRoomLayout() {
                                                         e.stopPropagation(); // 카드 클릭 이벤트 방지
                                                         if (window.confirm('정말로 이 채팅방을 삭제하시겠습니까?')) {
                                                             // TODO: 삭제 API 호출
+                                                            handleDeleteChatRoom(room.chat_id, index)
                                                             console.log('Delete room:', room.chat_id);
                                                         }
                                                     }}
