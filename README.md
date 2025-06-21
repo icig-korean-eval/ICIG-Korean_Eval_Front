@@ -1,74 +1,190 @@
-<<<<<<< HEAD
-# ICIG-Korean_Eval_Front
-=======
-# Getting Started with Create React App
+# Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## 1. Development Environment & Tech Stack
 
-## Available Scripts
+### 1.1 Development Environment
 
-In the project directory, you can run:
+- **Development Tool**: Visual Studio Code  
+- **Version Control**: Git  
+- **Package Manager**: npm  
+- **Development Server**: Create React App Development Server  
 
-### `npm start`
+### 1.2 Tech Stack
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- **Frontend Framework**: React 18.3.1  
+- **Routing**: React Router DOM 6.27.0  
+- **Language**: JavaScript (ES6+)  
+- **Styling**: CSS3 (Modular CSS files)  
+- **State Management**: React Context API  
+- **Build Tool**: Create React App  
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### 1.3 Component Structure
 
-### `npm test`
+- **App.jsx**: Main application container  
+- **HomePage.js**: Landing page and service introduction  
+- **DailyLearning.jsx**: Manages learning list and progress  
+- **LessonDetail.js**: Individual lesson learning interface  
+- **LevelTabs.jsx**: Global state management context  
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 4. Key Development Outcomes
 
-### `npm run build`
+### 4.1 Core Features Implemented
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### 4.1.1 User Interface (UI/UX)
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- **Modern and Intuitive Design**: User-friendly interface  
+- **Responsive Web Design**: Optimized for various devices  
+- **Consistent Design System**: Unified color palette and typography  
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### 4.1.2 Routing System
 
-### `npm run eject`
+- **SPA (Single Page Application)**: Client-side routing using React Router  
+- **Dynamic Routing**: Parameter-based routing like `/lesson/:level/:day`  
+- **Navigation Control**: Smooth transitions and back navigation  
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### 4.1.3 State Management System
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- **Using React Context API**: Global state management  
+- **Learning Progress Tracking**: Track completed lessons by level  
+- **Real-time State Updates**: Synchronization across components  
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### 4.1.4 Learning System
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+- **3-Level Curriculum**: Beginner, Intermediate, Advanced  
+- **10-Day Curriculum per Level**: Total of 30 structured learning modules  
+- **Sequential Learning System**: Unlock next lesson after completion  
+- **Progress Visualization**: Display of completed and unlocked status  
 
-## Learn More
+### 4.2 Data Structure Design
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### 4.2.1 Learning Content JSON Structure
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```json
+{
+  "Beginner": [
+    {
+      "Day": 1,
+      "Topic": "Self-introduction + Hobbies",
+      "KeyExpression": "저는 ~를 좋아해요",
+      "ExampleSentence": "저는 음악 듣는 걸 좋아해요."
+    }
+  ]
+}
+```
+### 4.2.2 Curriculum Structure
 
-### Code Splitting
+- **Beginner**: Basic greetings, daily conversations, fundamental grammar  
+- **Intermediate**: Expressing opinions, constructing compound sentences, situational conversations  
+- **Advanced**: Advanced expressions, idioms, discussions on abstract topics  
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+### 4.3 Implementation Details by Page
 
-### Analyzing the Bundle Size
+### 4.3.1 Home Page (HomePage.js)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+**Implemented Features**:
 
-### Making a Progressive Web App
+- Service introduction and overview of main features  
+- Provides menus for Context-aware Learning and Daily Learning  
+- Navigation bar and logo section  
+- Responsive layout applied  
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+**Key Outcomes**:
 
-### Advanced Configuration
+- Users can intuitively understand the service upon first visit  
+- Clean and modern design enhances user experience  
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+### 4.3.2 Daily Learning Page (DailyLearning.jsx)
 
-### Deployment
+**Implemented Features**:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+- Tab interface for selecting one of three levels  
+- List of 10-day lesson cards for each level  
+- Displays completion status and manages progress  
+- Sequential lesson lock/unlock system  
 
-### `npm run build` fails to minify
+**Key Outcomes**:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
->>>>>>> a0c7a86 (Initialize project using Create React App)
+- Users can easily grasp their learning progress at a glance  
+- Motivates learning through a structured learning path  
+
+### 4.3.3 Lesson Page (LessonDetail.js)
+
+**Implemented Features**:
+
+- Conversational learning interface with an AI tutor  
+- Korean sentence learning with example sentences  
+- Pronunciation correction feedback UI  
+- Voice input button field  
+
+**Key Outcomes**:
+
+- Realistic UI that feels like conversing with an AI tutor  
+- Interactive interface enhances learner engagement  
+
+## 5. Technical Implementation Details
+
+### 5.1 React Component Design
+
+### 5.1.1 Use of Functional Components
+
+- All components are implemented as functional components following the latest React patterns  
+- Actively used React Hooks such as `useState`, `useContext`, and `useNavigate`  
+- Maximized component reusability and maintainability
+
+### 5.1.2 Props and State Management
+
+```jsx
+// LevelContext를 통한 전역 상태 관리
+const { currentLevel, setCurrentLevel, completedDays, markDayComplete } = useLevel();
+
+// 지역 상태와 전역 상태의 적절한 분리
+const [selectedLevel, setSelectedLevelState] = useState(currentLevel || 'Beginner');
+```
+
+### 5.2 Routing Implementation
+
+### 5.2.1 React Router Configuration
+
+```jsx
+<Router>
+  <Routes>
+    <Route path="/" element={<HomePage />} />
+    <Route path="/daily" element={<DailyLearning />} />
+    <Route path="/lesson/:level/:day" element={<LessonPage />} />
+  </Routes>
+</Router>
+```
+
+### 5.2.2 Dynamic Routing
+
+- Passed lesson data via URL parameters  
+- Used `useParams` hook to extract route parameters  
+- Enabled programmatic navigation using `useNavigate` hook  
+
+### 5.3 Styling Implementation
+
+### 5.3.1 CSS Modularization
+
+- Managed independent CSS files per page  
+- Applied naming conventions to avoid class name collisions  
+- Designed reusable style components  
+
+### 5.3.2 Responsive Design
+
+- Used Flexbox layout for flexible UI  
+- Applied media queries for device-specific optimization  
+- Followed mobile-first design principles  
+
+## 6. Performance Optimization and Code Quality
+
+### 6.1 Performance Optimization
+
+- **Component Memoization**: Prevented unnecessary re-rendering  
+- **Efficient State Management**: Optimized data sharing via Context API  
+- **Code Splitting**: Divided components by page to improve initial load time  
+
+### 6.2 Code Quality Management
+
+- **Consistent Coding Style**: Followed ESLint rules  
+- **Structured Components**: Applied Single Responsibility Principle  
+- **Commenting and Documentation**: Improved code readability  
