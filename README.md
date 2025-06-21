@@ -26,38 +26,38 @@
 - **LessonDetail.js**: Individual lesson learning interface  
 - **LevelTabs.jsx**: Global state management context  
 
-## 4. Key Development Outcomes
+## 2. Key Development Outcomes
 
-### 4.1 Core Features Implemented
+### 2.1 Core Features Implemented
 
-### 4.1.1 User Interface (UI/UX)
+### 2.1.1 User Interface (UI/UX)
 
 - **Modern and Intuitive Design**: User-friendly interface  
 - **Responsive Web Design**: Optimized for various devices  
 - **Consistent Design System**: Unified color palette and typography  
 
-### 4.1.2 Routing System
+### 2.1.2 Routing System
 
 - **SPA (Single Page Application)**: Client-side routing using React Router  
 - **Dynamic Routing**: Parameter-based routing like `/lesson/:level/:day`  
 - **Navigation Control**: Smooth transitions and back navigation  
 
-### 4.1.3 State Management System
+### 2.1.3 State Management System
 
 - **Using React Context API**: Global state management  
 - **Learning Progress Tracking**: Track completed lessons by level  
 - **Real-time State Updates**: Synchronization across components  
 
-### 4.1.4 Learning System
+### 2.1.4 Learning System
 
 - **3-Level Curriculum**: Beginner, Intermediate, Advanced  
 - **10-Day Curriculum per Level**: Total of 30 structured learning modules  
 - **Sequential Learning System**: Unlock next lesson after completion  
 - **Progress Visualization**: Display of completed and unlocked status  
 
-### 4.2 Data Structure Design
+### 2.2 Data Structure Design
 
-### 4.2.1 Learning Content JSON Structure
+### 2.2.1 Learning Content JSON Structure
 
 ```json
 {
@@ -71,15 +71,15 @@
   ]
 }
 ```
-### 4.2.2 Curriculum Structure
+### 2.2.2 Curriculum Structure
 
 - **Beginner**: Basic greetings, daily conversations, fundamental grammar  
 - **Intermediate**: Expressing opinions, constructing compound sentences, situational conversations  
 - **Advanced**: Advanced expressions, idioms, discussions on abstract topics  
 
-### 4.3 Implementation Details by Page
+### 2.3 Implementation Details by Page
 
-### 4.3.1 Home Page (HomePage.js)
+### 2.3.1 Home Page (HomePage.js)
 
 **Implemented Features**:
 
@@ -93,7 +93,7 @@
 - Users can intuitively understand the service upon first visit  
 - Clean and modern design enhances user experience  
 
-### 4.3.2 Daily Learning Page (DailyLearning.jsx)
+### 2.3.2 Daily Learning Page (DailyLearning.jsx)
 
 **Implemented Features**:
 
@@ -107,7 +107,7 @@
 - Users can easily grasp their learning progress at a glance  
 - Motivates learning through a structured learning path  
 
-### 4.3.3 Lesson Page (LessonDetail.js)
+### 2.3.3 Lesson Page (LessonDetail.js)
 
 **Implemented Features**:
 
@@ -121,17 +121,17 @@
 - Realistic UI that feels like conversing with an AI tutor  
 - Interactive interface enhances learner engagement  
 
-## 5. Technical Implementation Details
+## 3. Technical Implementation Details
 
-### 5.1 React Component Design
+### 3.1 React Component Design
 
-### 5.1.1 Use of Functional Components
+### 3.1.1 Use of Functional Components
 
 - All components are implemented as functional components following the latest React patterns  
 - Actively used React Hooks such as `useState`, `useContext`, and `useNavigate`  
 - Maximized component reusability and maintainability
 
-### 5.1.2 Props and State Management
+### 3.1.2 Props and State Management
 
 ```jsx
 // LevelContext를 통한 전역 상태 관리
@@ -141,9 +141,9 @@ const { currentLevel, setCurrentLevel, completedDays, markDayComplete } = useLev
 const [selectedLevel, setSelectedLevelState] = useState(currentLevel || 'Beginner');
 ```
 
-### 5.2 Routing Implementation
+### 3.2 Routing Implementation
 
-### 5.2.1 React Router Configuration
+### 3.2.1 React Router Configuration
 
 ```jsx
 <Router>
@@ -155,36 +155,52 @@ const [selectedLevel, setSelectedLevelState] = useState(currentLevel || 'Beginne
 </Router>
 ```
 
-### 5.2.2 Dynamic Routing
+### 3.2.2 Dynamic Routing
 
 - Passed lesson data via URL parameters  
 - Used `useParams` hook to extract route parameters  
 - Enabled programmatic navigation using `useNavigate` hook  
 
-### 5.3 Styling Implementation
+### 3.3 Styling Implementation
 
-### 5.3.1 CSS Modularization
+### 3.3.1 CSS Modularization
 
 - Managed independent CSS files per page  
 - Applied naming conventions to avoid class name collisions  
 - Designed reusable style components  
 
-### 5.3.2 Responsive Design
+### 3.3.2 Responsive Design
 
 - Used Flexbox layout for flexible UI  
 - Applied media queries for device-specific optimization  
 - Followed mobile-first design principles  
 
-## 6. Performance Optimization and Code Quality
+## 4. Performance Optimization and Code Quality
 
-### 6.1 Performance Optimization
+### 4.1 Performance Optimization
 
 - **Component Memoization**: Prevented unnecessary re-rendering  
 - **Efficient State Management**: Optimized data sharing via Context API  
 - **Code Splitting**: Divided components by page to improve initial load time  
 
-### 6.2 Code Quality Management
+### 4.2 Code Quality Management
 
 - **Consistent Coding Style**: Followed ESLint rules  
 - **Structured Components**: Applied Single Responsibility Principle  
 - **Commenting and Documentation**: Improved code readability  
+
+
+## 5. Contribution
+
+- **Siwoo Ryu**
+  - Implemented state management
+  - Configured routing
+  - Developed the Daily Learning UI
+  - Integrated Daily Learning API
+
+- **Joonchul Kim**
+  - Developed the Context-Aware Learning UI
+  - Integrated Context-Aware Learning API
+
+- **Minseo Kim**
+  - Developed the Context-Aware Learning UI
